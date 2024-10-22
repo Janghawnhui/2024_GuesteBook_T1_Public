@@ -1,12 +1,12 @@
 #include "DW_ToolMenu.h"
 #include "PenThickness.h"
 
-
+#include "RectWindow.h"
 
 
 
 DW_ToolMenu::DW_ToolMenu(HINSTANCE hInstance)
-	:ChildWindow(RGB(255, 255, 255))
+	:ChildWindow(RGB(0, 255, 255)), isRectVisible(false)
 {
 	tInst = hInstance;
 	toolRT = { 0 };
@@ -31,6 +31,10 @@ void DW_ToolMenu::Create(HWND hParentWnd, int x, int y, int width, int height)
 	markerBT = CreateWindowW(L"BUTTON", L"MK", WS_CHILD | WS_VISIBLE,
 		170, 10, 30, 30, tWnd, (HMENU)MARKER, tInst, nullptr);
 			*/
+
+	createRECT = CreateWindowW(L"BUTTON", L"RECT", WS_CHILD | WS_VISIBLE,
+		250, 10, 60, 30, tWnd, (HMENU)TL_RECT_BT, tInst, nullptr);
+
 	watercolorBT = CreateWindowW(L"BUTTON", L"BS", WS_CHILD | WS_VISIBLE,
 		210, 10, 30, 30, tWnd, (HMENU)WATERCOLOR, tInst, nullptr);
 	
@@ -53,7 +57,7 @@ void DW_ToolMenu::Create(HWND hParentWnd, int x, int y, int width, int height)
 		(toolRT.right / 2) + 20, 10, 30, 30, tWnd, (HMENU)TL_RESET_BT, tInst, nullptr);
 
 	roundRgn = CreateEllipticRgn(0, 0, 30, 30);
-
+	rectWindow = new RectWindow(tInst);
 	
 }
 
@@ -106,6 +110,14 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 	case WM_COMMAND:
 		switch (wParam)
 		{
+		case TL_RECT_BT:
+			if (rectWindow != nullptr) {
+				rectWindow->Create(Function::hWnd, 200, 20, 200, 2020);
+				//InvalidateRect(Function::hWnd, NULL, TRUE); // 사각형 창을 다시 그리도록 요청
+				//SetWindowPos(Function::hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			}
+			break;
+			break;
 		case TL_COLOR1_BT:
 			if (Function::penNum == 0)
 				colorPalette->colorSelect(tWnd, 0);
@@ -212,10 +224,16 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 
 	/// 툴 메뉴 바의 PAINT 영역
 	case WM_PAINT:
+		//if (isRectVisible) {
+		//	HBRUSH rectBrush = CreateSolidBrush(RGB(100, 100, 255));  // 파란색 사각형
+		//	RECT rect = { 100, 1000, 300, 300 };  // 사각형 크기와 위치
+		//	FillRect(tHdc, &rect, rectBrush);  // 사각형 채우기
+		//	DeleteObject(rectBrush);  // 브러시 해제
+		//}
 		toolRT = ChildWindow::GetRT();
 		//tHdc = GetDC(tWnd);
 		tHdc = BeginPaint(tWnd, &t_ps);
-
+		
 		tt1 = CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
 		tt2 = (HPEN)SelectObject(tHdc, tt1);
 
@@ -274,7 +292,7 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 		SelectObject(tHdc, ToolPen);
 		SelectObject(tHdc, ToolBrush);
 
-
+		
 		DeleteObject(ToolPen);
 		DeleteObject(ToolBrush);
 		EndPaint(tWnd, &t_ps);

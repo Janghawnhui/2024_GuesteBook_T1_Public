@@ -159,6 +159,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PenThickness.h" />
     <ClInclude Include="PenView.h" />
+    <ClInclude Include="RectWindow.h" />
     <ClInclude Include="RegisterList.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Stamp.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="MakeButton.cpp" />
     <ClCompile Include="PenThickness.cpp" />
     <ClCompile Include="PenView.cpp" />
+    <ClCompile Include="RectWindow.cpp" />
     <ClCompile Include="RegisterList.cpp" />
     <ClCompile Include="Stamp.cpp" />
   </ItemGroup>
