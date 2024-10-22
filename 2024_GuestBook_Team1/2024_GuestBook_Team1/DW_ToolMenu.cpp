@@ -2,9 +2,6 @@
 #include "PenThickness.h"
 
 
-
-
-
 DW_ToolMenu::DW_ToolMenu(HINSTANCE hInstance)
 	:ChildWindow(RGB(255, 255, 255))
 {
@@ -34,6 +31,9 @@ void DW_ToolMenu::Create(HWND hParentWnd, int x, int y, int width, int height)
 	watercolorBT = CreateWindowW(L"BUTTON", L"BS", WS_CHILD | WS_VISIBLE,
 		210, 10, 30, 30, tWnd, (HMENU)WATERCOLOR, tInst, nullptr);
 	
+	Color0BT = CreateWindowW(L"BUTTON", L"색0", WS_CHILD | WS_VISIBLE,
+		260, 10, 30, 30, tWnd, (HMENU)TL_COLOR0_BT, tInst, nullptr);
+
 	Color1BT = CreateWindowW(L"BUTTON", L"색1", WS_CHILD | WS_VISIBLE,
 		(toolRT.right / 2) - 100, 10, 30, 30, tWnd, (HMENU)TL_COLOR1_BT, tInst, nullptr);
 	Color2BT = CreateWindowW(L"BUTTON", L"색2", WS_CHILD | WS_VISIBLE,
@@ -104,6 +104,12 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 	case WM_COMMAND:
 		switch (wParam)
 		{
+		case TL_COLOR0_BT:
+			if (!colorPicker) {
+				colorPicker = make_unique<ColorPicker>(tInst); // ColorPicker 객체 생성
+			}
+			colorPicker->Show(SW_SHOW); // ColorPicker 창을 보여줌
+			break;
 		case TL_COLOR1_BT:
 			if (Function::penNum == 0)
 				colorPalette->colorSelect(tWnd, 0);

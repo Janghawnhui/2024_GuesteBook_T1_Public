@@ -4,6 +4,7 @@
 #include "Function.h"
 #include <thread>
 
+#include "ColorPicker.h"
 #include "ColorPalette.h"
 #include "MakeButton.h"
 
@@ -30,6 +31,7 @@ protected:
     HWND markerBT = nullptr;
     HWND watercolorBT = nullptr;
 
+    HWND Color0BT = nullptr;
     HWND Color1BT = nullptr;
     HWND Color2BT = nullptr;
     HWND Color3BT = nullptr;
@@ -41,6 +43,7 @@ protected:
 
     std::unique_ptr<Function> function;
     std::unique_ptr<ColorPalette> colorPalette;
+    unique_ptr<RECTWrapper> RECTWrapper; // ColorPicker °´Ã¼ Ãß°¡
 
 
     HRGN roundRgn;

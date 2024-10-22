@@ -21,6 +21,10 @@
 
 ///사용자 정의 상수
 
+#define IDD_COLORPICKER        1004
+#define IDC_COLORPALLETTE      1005
+#define IDOK                    1006
+#define IDCANCEL                1007
 // 브러쉬 종류 버튼 
 #define BASIC 300
 #define BRUSH 301
@@ -90,6 +94,7 @@
 
 #define TOOL_DEF					(DEF_ID + 500)
 
+#define TL_COLOR0_BT				(TOOL_DEF + 9)
 #define TL_COLOR1_BT				(TOOL_DEF + 1)
 #define TL_COLOR2_BT				(TOOL_DEF + 2)
 #define TL_COLOR3_BT				(TOOL_DEF + 3)

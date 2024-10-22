@@ -10,6 +10,7 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+HBRUSH hbrush;
 
 HWND DrowBT = nullptr;
 HWND LoadBT = nullptr;
@@ -20,6 +21,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK   ColorPickerProc(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -274,6 +276,37 @@ INT_PTR About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    }
+    return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK ColorPickerProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
+    switch (message) {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK) {
+            // OK 버튼 클릭 시
+            // 여기에 색상 선택 로직 추가
+            EndDialog(hDlg, IDOK);
+            return (INT_PTR)TRUE;
+        }
+        else if (LOWORD(wParam) == IDCANCEL) {
+            EndDialog(hDlg, IDCANCEL);
+            return (INT_PTR)TRUE;
+        }
+        break;
+
+    case WM_CTLCOLORSTATIC:
+
+        // 여기서 팔레트를 그릴 수 있습니다.
+        // 예를 들어, 색상 팔레트를 그리는 코드를 여기에 추가합니다.
+        return (INT_PTR)hbrush;
+
+    case WM_CLOSE:
+        EndDialog(hDlg, IDCANCEL);
+        return (INT_PTR)TRUE;
     }
     return (INT_PTR)FALSE;
 }
