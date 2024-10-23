@@ -6,7 +6,6 @@
 
 #include "ColorPalette.h"
 #include "MakeButton.h"
-#include "RectWindow.h"
 
 
 class DW_ToolMenu : public ChildWindow
@@ -17,7 +16,7 @@ public:
 
     bool* tCnt;
     bool pCnt;
-    bool isRectVisible;
+
 protected:
     LRESULT HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
     HINSTANCE tInst;
@@ -30,7 +29,6 @@ protected:
     HWND sprayBT = nullptr;
     HWND markerBT = nullptr;
     HWND watercolorBT = nullptr;
-    HWND createRECT = nullptr;
 
     HWND Color1BT = nullptr;
     HWND Color2BT = nullptr;
@@ -43,7 +41,7 @@ protected:
 
     std::unique_ptr<Function> function;
     std::unique_ptr<ColorPalette> colorPalette;
-    RectWindow* rectWindow = nullptr;
+
 
     HRGN roundRgn;
 };
