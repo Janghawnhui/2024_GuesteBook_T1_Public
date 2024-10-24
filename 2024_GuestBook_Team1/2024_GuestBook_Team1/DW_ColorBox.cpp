@@ -7,7 +7,7 @@ DW_ColorBox::DW_ColorBox(HINSTANCE hInstance)
 	BoxRT = { 0 };
 	bWnd = nullptr;
 
-	colorPicker = new ColorPicker();
+	colorPicker = new ColorPicker(bWnd);
 }
 
 void DW_ColorBox::CreatePop(HWND hParentWnd, int x, int y, int width, int height)
@@ -26,7 +26,7 @@ LRESULT DW_ColorBox::HandleMessage(HWND pWnd, UINT message, WPARAM wParam, LPARA
 	{
 	case WM_KILLFOCUS:
 
-		//ShowWindow(pWnd, false);
+		ShowWindow(pWnd, false);
 
 		break;
 	case WM_PAINT:
@@ -39,6 +39,7 @@ LRESULT DW_ColorBox::HandleMessage(HWND pWnd, UINT message, WPARAM wParam, LPARA
 		colorPicker->drawColors(bHdc);
 		colorPicker->drawPreview(bHdc);
 		colorPicker->showPicker(pWnd);
+		colorPicker->Draw(bHdc);
 		TextOut (bHdc, 10, 200, L"Thickness:", 9);
 
 		BoxBrush = (HBRUSH)SelectObject(bHdc, GetStockObject(NULL_BRUSH));
