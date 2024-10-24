@@ -2,6 +2,7 @@
 
 #include "ChildWindow.h"
 #include "Function.h"
+#include "ColorPicker.h"
 
 class DW_ColorBox : public ChildWindow
 {
@@ -15,4 +16,5 @@ protected:
 	HINSTANCE bInst;
 	HWND bWnd;
 	RECT BoxRT;
+	ColorPicker* colorPicker;
 };

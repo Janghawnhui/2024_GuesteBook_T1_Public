@@ -49,7 +49,7 @@ void DrowWindow::Create(HWND hParentWnd, int x, int y, int width, int height)
     sideMenu->Show(FALSE);
 
     colorbox = make_unique<DW_ColorBox>(dInst);
-    colorbox->CreatePop(dWnd, 300,100, 300, 600);
+    colorbox->CreatePop(dWnd, 300,100, 300, 400);
     bHWnd = colorbox->GetHWND();
 
     colorbox->Show(FALSE);
@@ -80,7 +80,7 @@ LRESULT DrowWindow::HandleMessage(HWND dWnd, UINT message, WPARAM wParam, LPARAM
 
         MoveWindow(cHWnd, (drowRT.right - 1300) / 2, (drowRT.bottom - 750) / 2 + 75, 1300, 700, TRUE);
 
-        MoveWindow(bHWnd, (drowRT.right / 2) - 50, 70, (drowRT.right / 2 + 50), 370, TRUE);
+        //MoveWindow(bHWnd, (drowRT.right / 2) - 50, 70, 300, 400, TRUE);
 
         InvalidateRect(dWnd, nullptr, true);
 
@@ -126,7 +126,7 @@ LRESULT DrowWindow::HandleMessage(HWND dWnd, UINT message, WPARAM wParam, LPARAM
             MoveWindow(bHWnd,
                 (drowRT.right - 800) / 2, // 가운데 정렬을 위해 좌우 폭 기준으로 계산
                 (drowRT.bottom - 300) / 2, // 위아래 폭 기준으로 중간 정렬
-                400, 300,                  // ColorBox의 고정된 너비와 높이
+                300, 400,                  // ColorBox의 고정된 너비와 높이
                 true);
             colorbox->Show(true);
             break;
