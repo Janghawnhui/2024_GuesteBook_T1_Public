@@ -1,5 +1,6 @@
 #include "DrowWindow.h"
 
+
 DrowWindow::DrowWindow(HINSTANCE hInstance)
     :ChildWindow(RGB(249, 243, 240))
 {
@@ -14,6 +15,7 @@ DrowWindow::DrowWindow(HINSTANCE hInstance)
     desktopRT = { 0 };
 }
 
+//DrowWindow::colWnd = nullptr;
 
 void DrowWindow::Create(HWND hParentWnd, int x, int y, int width, int height)
 {
@@ -62,6 +64,8 @@ void DrowWindow::Create(HWND hParentWnd, int x, int y, int width, int height)
 
     connExcel->setTextPosX(drowRT.right);
 
+    
+
 }
 
 
@@ -91,6 +95,11 @@ LRESULT DrowWindow::HandleMessage(HWND dWnd, UINT message, WPARAM wParam, LPARAM
 
         break;
 
+    case WM_SETTEXT:
+        /// save나 로드시 namebar 텍스트 변경
+        SendMessage(nHWnd, WM_SETTEXT, 0, (LPARAM)FileManager::baseName.c_str());       /// DW_NameBar로 메시지 전달
+        break;
+
     case WM_COMMAND:
         drowRT = GetRT();
         switch (LOWORD(wParam))
@@ -115,20 +124,9 @@ LRESULT DrowWindow::HandleMessage(HWND dWnd, UINT message, WPARAM wParam, LPARAM
             sideMenu->Show(true);
             break;
 
-        case TL_COLORBOX_BT:
-            GetClientRect(dWnd, &drowRT);
-            pt = { 0 };
-            ClientToScreen(dWnd, &pt);
-            IntersectRect(&drowRT, &desktopRT, &drowRT);
-
-            DSideRT = GetChildPos(dWnd, bHWnd);
-
-            MoveWindow(bHWnd,
-                (drowRT.right - 800) / 2, // 가운데 정렬을 위해 좌우 폭 기준으로 계산
-                (drowRT.bottom - 300) / 2, // 위아래 폭 기준으로 중간 정렬
-                300, 400,                  // ColorBox의 고정된 너비와 높이
-                true);
-            colorbox->Show(true);
+        case TL_PLAY_BT:
+            /// 로드시 리플레이 기능
+            SendMessage(tHWnd, WM_COMMAND, TL_PLAY_BT, 0);          /// DW_SideMenu로 메시지 전달
             break;
 
         default:
@@ -163,4 +161,26 @@ LRESULT DrowWindow::HandleMessage(HWND dWnd, UINT message, WPARAM wParam, LPARAM
 int DrowWindow::getDWWidth()
 {
     return drowRT.right - drowRT.left;
+}
+
+void DrowWindow::colorPickerCreate(int colorNum)
+{
+    //int x, y, width, hight;
+    switch(colorNum){
+    case 0:
+        
+        break;
+    case 1:
+
+        break;
+    case 2:
+
+        break;
+    }
+    //DrowWindow::colWnd = CreateWindowEx(WS_EX_TOOLWINDOW, L"DrowWindow", L"DrowWindow", WS_POPUP | WS_VISIBLE | WS_CAPTION ,x,y,width,hight,dWnd,NULL,nullptr,NULL);
+}
+
+void DrowWindow::colorPickerDestroy()
+{
+    //DestroyWindow(colWnd);
 }

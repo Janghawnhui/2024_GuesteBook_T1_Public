@@ -19,6 +19,11 @@ public:
 
     bool toolCnt;
 
+    //static HWND colWnd;
+
+    void colorPickerCreate(int);
+    void colorPickerDestroy();
+
 protected:
     LRESULT HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
     HINSTANCE dInst;
@@ -60,6 +65,7 @@ protected:
     int getDWWidth();
 
     WCHAR text[10000];
+    
 };
 
 #endif

@@ -29,6 +29,7 @@ LRESULT DW_ColorBox::HandleMessage(HWND pWnd, UINT message, WPARAM wParam, LPARA
 		ShowWindow(pWnd, false);
 
 		break;
+		/*
 	case WM_PAINT:
 
 		
@@ -47,6 +48,7 @@ LRESULT DW_ColorBox::HandleMessage(HWND pWnd, UINT message, WPARAM wParam, LPARA
 		Rectangle(bHdc, BoxRT.left, BoxRT.top, BoxRT.right, BoxRT.bottom);
 		EndPaint(pWnd, &b_ps);
 		
+		*/
 	case WM_LBUTTONDOWN: {
 		int x = LOWORD(lParam);
 		int y = HIWORD(lParam);

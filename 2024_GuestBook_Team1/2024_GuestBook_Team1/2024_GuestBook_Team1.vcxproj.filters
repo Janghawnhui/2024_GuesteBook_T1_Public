@@ -168,13 +168,10 @@
     <Image Include="..\ImgResource\REPLAY.ico">
       <Filter>리소스 파일</Filter>
     </Image>
-    <Image Include="..\ImgResource\Pen_Icon.ico">
+    <Image Include="..\ImgResource\Stamp\heart_stamp.ico">
       <Filter>리소스 파일</Filter>
     </Image>
-    <Image Include="..\ImgResource\Brush_Icon.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\ImgResource\ERASE.ico">
+    <Image Include="..\ImgResource\Stamp\heart_button.ico">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

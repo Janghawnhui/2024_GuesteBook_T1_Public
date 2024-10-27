@@ -109,7 +109,7 @@ ColorPicker::~ColorPicker() {
 //    SendMessage(hSlider, TBM_SETRANGE, TRUE, MAKELONG(1, 20));  // 굵기 범위 1-20 설정
 //    SendMessage(hSlider, TBM_SETPOS, TRUE, thickness);          // 초기 굵기 값 설정
 //}
-
+/*
 void ColorPicker::showPicker(HWND parentWnd) {
     // 슬라이더 생성
     hSlider = CreateWindowEx(0, TRACKBAR_CLASS, L"Thickness",
@@ -120,7 +120,7 @@ void ColorPicker::showPicker(HWND parentWnd) {
     SendMessage(hSlider, TBM_SETRANGE, TRUE, MAKELONG(1, 20));  // 굵기 범위 1-20 설정
     SendMessage(hSlider, TBM_SETPOS, TRUE, thickness);          // 초기 굵기 값 설정
 }
-
+*/
 LRESULT CALLBACK ColorPicker::ColorPickerWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     ColorPicker* picker = reinterpret_cast<ColorPicker*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
