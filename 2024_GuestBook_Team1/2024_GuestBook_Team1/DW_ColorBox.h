@@ -3,6 +3,7 @@
 #include "ChildWindow.h"
 #include "Function.h"
 #include "ColorPicker.h"
+#include "PenThickness.h"
 #include <vector>
 #include <memory>
 
@@ -11,8 +12,7 @@ class DW_ColorBox : public ChildWindow
 public:
     DW_ColorBox(HINSTANCE hInstance);
     void CreatePop(HWND hParentWnd, int x, int y, int width, int height);
-    COLORREF getSelectedColor() const;
-    COLORREF getSelectedColor(); // 중복된 메서드 제거 (같은 기능으로 보입니다)
+    COLORREF getSelectedColor() const; 
     std::vector<PINFO>* penMemory;
 
 protected:

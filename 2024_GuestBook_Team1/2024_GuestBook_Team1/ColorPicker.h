@@ -1,6 +1,7 @@
 #pragma once
 #pragma comment(lib, "Gdiplus.lib")
 
+
 #include <windows.h>
 #include <commctrl.h>
 #include <gdiplus.h>
@@ -26,6 +27,9 @@ private:
     int palette_width_;
     int palette_height_;
 
+    RECT palette_area_;
+    RECT hue_slider_area_;
+
     int hue_slider_width_;
     int hue_slider_height_;
     int hue_slider_x_;
@@ -35,13 +39,19 @@ private:
     int thickness;             // 선택된 굵기
 
     HBRUSH colorBrush[16];     // 색상 선택을 위한 브러시 배열
+
     void PaletteControl(POINT mouse_position);
+    void HueSliderControl(POINT mouse_position);
+
     double h_; // 색상(Hue)
     double s_ = 1; // 채도(Saturation)
     double v_; // 명도(Value)
     double pen_size_; // 팬 크기
 
     bool is_color_picker_open_;
+    bool is_palette_click_;
+    bool is_hue_slider_click_;
+
     Gdiplus::Color current_color_;
 
 public:
@@ -56,4 +66,8 @@ public:
     void Draw(HDC hdc);
     COLORREF getSelectedColor();
     Gdiplus::Color HSVToRGB(double h, double s, double v);
+
+    void MouseUp();
+    void MouseDown(POINT mouse_position);
+    void MouseMove(POINT mouse_position);
 };

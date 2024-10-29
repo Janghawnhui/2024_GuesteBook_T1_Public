@@ -9,24 +9,24 @@ DW_ColorBox::DW_ColorBox(HINSTANCE hInstance)
 
     colorPicker = std::make_unique<ColorPicker>(bWnd);
 
-    // 닫기 버튼 생성
-    closeButton = CreateWindowEx(
-        0, L"BUTTON", L"닫기",
-        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-        150, 5, 50, 25,  // 위치 및 크기 설정
-        bWnd,
-        (HMENU)IDC_CLOSE_BUTTON,  // 닫기 버튼 ID
-        bInst, NULL
-    );
-    // 확인 버튼 생성
-    OKButton = CreateWindowEx(
-        0, L"BUTTON", L"확인",
-        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-        200, 5, 50, 25,
-        bWnd,
-        (HMENU)IDC_OK_BUTTON,
-        bInst, NULL
-    );
+    //// 닫기 버튼 생성
+    //closeButton = CreateWindowEx(
+    //    0, L"BUTTON", L"닫기",
+    //    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+    //    150, 5, 50, 25,  // 위치 및 크기 설정
+    //    bWnd,
+    //    (HMENU)IDC_CLOSE_BUTTON,  // 닫기 버튼 ID
+    //    bInst, NULL
+    //);
+    //// 확인 버튼 생성
+    //OKButton = CreateWindowEx(
+    //    0, L"BUTTON", L"확인",
+    //    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+    //    200, 5, 50, 25,
+    //    bWnd,
+    //    (HMENU)IDC_OK_BUTTON,
+    //    bInst, NULL
+    //);
     
 }
 
@@ -58,11 +58,10 @@ COLORREF DW_ColorBox::getSelectedColor() const {
     return colorPicker ? colorPicker->getSelectedColor() : RGB(255, 255, 255); // 기본 색상으로 흰색 사용
 }
 
-COLORREF DW_ColorBox::getSelectedColor() {
-    return colorPicker->getSelectedColor();
-}
+
 
 LRESULT DW_ColorBox::HandleMessage(HWND pWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    POINT mouse_position;
     switch (message) {
     /*case WM_KILLFOCUS:
         ShowWindow(pWnd, false);
@@ -113,13 +112,21 @@ LRESULT DW_ColorBox::HandleMessage(HWND pWnd, UINT message, WPARAM wParam, LPARA
         break;
     }
 
+    case WM_LBUTTONUP:
+    {
+        mouse_position.x = LOWORD(lParam);
+        mouse_position.y = HIWORD(lParam);
+
+        colorPicker->MouseUp();
+    }
+                   
     case WM_LBUTTONDOWN: {
-        int x = LOWORD(lParam);
-        int y = HIWORD(lParam);
+        mouse_position.x = LOWORD(lParam);
+        mouse_position.y = HIWORD(lParam);
 
         // ColorPicker에서 색상 선택 업데이트 후 영역 다시 그리기
-        colorPicker->handleColorSelection(pWnd, x, y);
-        InvalidateRect(pWnd, NULL, TRUE);  // 전체 창 갱신
+        colorPicker->handleColorSelection(pWnd, mouse_position.x, mouse_position.y);
+        colorPicker->MouseDown(mouse_position);
         break;
     }
 

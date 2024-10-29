@@ -1,10 +1,12 @@
 #include "ColorPicker.h"
+#
 using namespace Gdiplus;
 
 ColorPicker::ColorPicker(HWND hWnd) {
 
     this->hWnd = hWnd;
 
+    is_color_picker_open_ = true;
     palette_width_ = 200;
     palette_height_ = 200;
     hue_slider_width_ = 30;
@@ -15,47 +17,89 @@ ColorPicker::ColorPicker(HWND hWnd) {
 
     current_color_ = HSVToRGB(360.0f - h_, s_, 1.0f - v_);
 
-    // 16개의 색상 브러시 생성
-    //colorBrush[0] = CreateSolidBrush(RGB(255, 0, 0));    // 빨강
-    //colorBrush[1] = CreateSolidBrush(RGB(0, 255, 0));    // 초록
-    //colorBrush[2] = CreateSolidBrush(RGB(0, 0, 255));    // 파랑
-    //colorBrush[3] = CreateSolidBrush(RGB(255, 255, 0));  // 노랑
-    //colorBrush[4] = CreateSolidBrush(RGB(255, 0, 255));  // 자홍
-    //colorBrush[5] = CreateSolidBrush(RGB(0, 255, 255));  // 청록
-    //colorBrush[6] = CreateSolidBrush(RGB(128, 0, 0));    // 어두운 빨강
-    //colorBrush[7] = CreateSolidBrush(RGB(0, 128, 0));    // 어두운 초록
-    //colorBrush[8] = CreateSolidBrush(RGB(0, 0, 128));    // 어두운 파랑
-    //colorBrush[9] = CreateSolidBrush(RGB(128, 128, 0));  // 어두운 노랑
-    //colorBrush[10] = CreateSolidBrush(RGB(128, 0, 128)); // 어두운 자홍
-    //colorBrush[11] = CreateSolidBrush(RGB(0, 128, 128)); // 어두운 청록
-    //colorBrush[12] = CreateSolidBrush(RGB(192, 192, 192)); // 회색
-    //colorBrush[13] = CreateSolidBrush(RGB(128, 128, 128)); // 어두운 회색
-    //colorBrush[14] = CreateSolidBrush(RGB(0, 0, 0));      // 검정
-    //colorBrush[15] = CreateSolidBrush(RGB(255, 255, 255)); // 흰색
-
     // 초기 선택 색상 및 굵기 설정
     selectedColor = RGB(0, 0, 0);
     thickness = 1;
 
-    // 사각형 영역 설정 (4x4 배열)
-   //int x = 10, y = 10;
-   // for (int i = 0; i < 16; i++) {
-   //     colorRect[i] = { x, y, x + 40, y + 40 };
-   //     x += 50;
-   //     if ((i + 1) % 4 == 0) {
-   //         x = 10;
-   //         y += 50;
-   //     }
-   // }
     // 미리보기 영역 및 굵기 영역 정의
     previewRect = { 10, 290, 250, 340 };
     thicknessRect = { 10, 230, 250, 270 };
+}
+
+
+void ColorPicker::MouseUp()
+{
+    if (is_color_picker_open_)
+    {
+        if (is_palette_click_ || is_hue_slider_click_)
+        {
+            is_palette_click_ = false;    // 팔레트 클릭 해제
+            is_hue_slider_click_ = false; // 색상 슬라이더 클릭 해제
+        }
+    }
+}
+
+// 마우스가 눌렸을 때 처리
+void ColorPicker::MouseDown(POINT mouse_position)
+{
+    if (is_color_picker_open_)
+    {
+        // 팔레트 영역에서 클릭이 발생했는지 확인
+        if (PtInRect(&palette_area_, mouse_position))
+        {
+            PaletteControl(mouse_position); // 팔레트 제어
+            is_palette_click_ = true; // 팔레트 클릭 상태로 설정
+        }
+        // 색상 슬라이더 영역에서 클릭이 발생했는지 확인
+        else if (PtInRect(&hue_slider_area_, mouse_position))
+        {
+            HueSliderControl(mouse_position); // 색상 슬라이더 제어
+            is_hue_slider_click_ = true; // 색상 슬라이더 클릭 상태로 설정
+        }
+    }
+}
+
+// 마우스 이동 시 처리
+void ColorPicker::MouseMove(POINT mouse_position)
+{
+    if (is_color_picker_open_)
+    {
+        if (is_palette_click_)
+        {
+            // 팔레트 영역 밖으로 벗어나면 클릭 상태 해제
+            if (!PtInRect(&palette_area_, mouse_position))
+            {
+                MouseUp();
+                return;
+            }
+
+            PaletteControl(mouse_position); // 팔레트 제어
+        }
+
+        if (is_hue_slider_click_)
+        {
+            // 색상 슬라이더 영역 밖으로 벗어나면 클릭 상태 해제
+            if (!PtInRect(&hue_slider_area_, mouse_position))
+            {
+                MouseUp();
+                return;
+            }
+
+            HueSliderControl(mouse_position); // 색상 슬라이더 제어
+        }
+    }
 }
 
 void ColorPicker::PaletteControl(POINT mouse_position)
 {
     s_ = min(max(((mouse_position.x - palette_x_) * 1.0f) / palette_width_, 0), 1.0f); // 채도 계산
     v_ = min(max(((mouse_position.y - palette_y_) * 1.0f) / palette_height_, 0), 1.0f); // 밝기 계산
+    InvalidateRect(hWnd, NULL, FALSE); // 화면 갱신 요청
+}
+
+void ColorPicker::HueSliderControl(POINT mouse_position)
+{
+    h_ = min(max(((mouse_position.y - hue_slider_y_) * 360.0f) / hue_slider_height_, 0), 360.0f); // 색상 계산
     InvalidateRect(hWnd, NULL, FALSE); // 화면 갱신 요청
 }
 void ColorPicker::Draw(HDC hdc)
@@ -91,12 +135,17 @@ void ColorPicker::Draw(HDC hdc)
             Color(255, 0, 0, 0));
         graphics.FillRectangle(&palette_vertical, palette_x_, palette_y_, palette_width_, palette_height_);
 
+        // 선택된 색상의 원형 표시
+        int palette_circle_x = palette_x_ + (int)(s_ * palette_width_);
+        int palette_circle_y = palette_y_ + (int)(v_ * palette_height_);
+        graphics.DrawEllipse(&black_pen, palette_circle_x - 5, palette_circle_y - 5, 10, 10);
+        graphics.DrawEllipse(&white_pen, palette_circle_x - 4, palette_circle_y - 4, 8, 8);
         hue_slider_x_ = palette_x_ + palette_width_ + 20;
         hue_slider_y_ = palette_y_;
 
         graphics.FillRectangle(&white_brush, hue_slider_x_, hue_slider_y_, hue_slider_width_, hue_slider_height_);
 
-        Image hue_slider_image(L"ImgResource/Hue.png");
+        Image hue_slider_image(L"../ImgResource/Hue.png");
         graphics.DrawImage(&hue_slider_image, hue_slider_x_, hue_slider_y_, hue_slider_width_, hue_slider_height_);
 
         Point left_points[] = {
@@ -112,10 +161,12 @@ void ColorPicker::Draw(HDC hdc)
             Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ + 5),
             Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ - 5) };
 
+
         graphics.FillPolygon(&white_brush, right_points, 3);
         graphics.DrawPolygon(&thumb_contour_pen, right_points, 3);
 
-
+        palette_area_ = { palette_x_ - 10, palette_y_ - 10, palette_x_ + palette_width_ + 10, palette_y_ + palette_height_ + 10 };
+        hue_slider_area_ = { hue_slider_x_, hue_slider_y_ - 10, hue_slider_x_ + hue_slider_width_, hue_slider_y_ + hue_slider_height_ + 10 };
 }
 ColorPicker::~ColorPicker() {
     for (int i = 0; i < 16; i++) {
@@ -147,17 +198,6 @@ LRESULT CALLBACK ColorPicker::ColorPickerWndProc(HWND hWnd, UINT message, WPARAM
         picker->showPicker(hWnd);
         break;
 
-    case WM_PAINT: {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hWnd, &ps);
-
-        picker->drawColors(hdc);
-        picker->drawPreview(hdc);
-        picker->Draw(hdc);  // 팔레트 그리기 함수
-
-        EndPaint(hWnd, &ps);
-        break;
-    }
 
     case WM_LBUTTONDOWN: {
         int x = LOWORD(lParam);
