@@ -42,9 +42,11 @@ INT_PTR CALLBACK PenThickness::dlgProc(HWND hDlg, UINT message, WPARAM wParam, L
         switch (LOWORD(wParam)) {
         case IDOK:
             penWidth = GetDlgItemInt(hDlg, IDC_THICKNESS_EDIT, NULL, FALSE);
+            if (thicknessChangedCallback) {
+                thicknessChangedCallback(penWidth); // 두께 변경 콜백 호출
+            }
             EndDialog(hDlg, IDOK);
             return TRUE;
-
         case IDC_CLOSE_BUTTON:
             EndDialog(hDlg, IDC_CLOSE_BUTTON);
             return TRUE;
@@ -61,4 +63,13 @@ INT_PTR CALLBACK PenThickness::dlgProc(HWND hDlg, UINT message, WPARAM wParam, L
 // 펜 굵기를 반환하는 함수
 int PenThickness::getPenWidth() {
     return penWidth;  // 현재 설정된 펜 굵기 값 반환
+}
+void PenThickness::setPenWidth(int width) {
+    penWidth = width;
+}
+
+std::function<void(int)> PenThickness::thicknessChangedCallback = nullptr;
+
+void PenThickness::setThicknessChangedCallback(std::function<void(int)> callback) {
+    thicknessChangedCallback = callback;
 }

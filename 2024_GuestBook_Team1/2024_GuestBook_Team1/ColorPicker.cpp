@@ -16,7 +16,7 @@ ColorPicker::ColorPicker(HWND hWnd) {
     v_ = 1.0f;
 
     current_color_ = HSVToRGB(360.0f - h_, s_, 1.0f - v_);
-
+    thickness = PenThickness::getPenWidth();
     // 초기 선택 색상 및 굵기 설정
     selectedColor = RGB(0, 0, 0);
     thickness = 1;
@@ -92,15 +92,25 @@ void ColorPicker::MouseMove(POINT mouse_position)
 
 void ColorPicker::PaletteControl(POINT mouse_position)
 {
-    s_ = min(max(((mouse_position.x - palette_x_) * 1.0f) / palette_width_, 0), 1.0f); // 채도 계산
-    v_ = min(max(((mouse_position.y - palette_y_) * 1.0f) / palette_height_, 0), 1.0f); // 밝기 계산
-    InvalidateRect(hWnd, NULL, FALSE); // 화면 갱신 요청
+    s_ = min(max(((mouse_position.x - palette_x_) * 1.0f) / palette_width_, 0), 1.0f);
+    v_ = min(max(((mouse_position.y - palette_y_) * 1.0f) / palette_height_, 0), 1.0f);
+
+    // 선택된 HSV 색상을 RGB로 변환하여 selectedColor 업데이트
+    Color rgbColor = HSVToRGB(360.0f - h_, s_, 1.0f - v_);
+    selectedColor = RGB(rgbColor.GetR(), rgbColor.GetG(), rgbColor.GetB());
+
+    InvalidateRect(hWnd, NULL, FALSE);
 }
 
 void ColorPicker::HueSliderControl(POINT mouse_position)
 {
-    h_ = min(max(((mouse_position.y - hue_slider_y_) * 360.0f) / hue_slider_height_, 0), 360.0f); // 색상 계산
-    InvalidateRect(hWnd, NULL, FALSE); // 화면 갱신 요청
+    h_ = min(max(((mouse_position.y - hue_slider_y_) * 360.0f) / hue_slider_height_, 0), 360.0f);
+
+    // 선택된 HSV 색상을 RGB로 변환하여 selectedColor 업데이트
+    Color rgbColor = HSVToRGB(360.0f - h_, s_, 1.0f - v_);
+    selectedColor = RGB(rgbColor.GetR(), rgbColor.GetG(), rgbColor.GetB());
+
+    InvalidateRect(hWnd, NULL, FALSE);
 }
 void ColorPicker::Draw(HDC hdc)
 {
@@ -169,9 +179,7 @@ void ColorPicker::Draw(HDC hdc)
         hue_slider_area_ = { hue_slider_x_, hue_slider_y_ - 10, hue_slider_x_ + hue_slider_width_, hue_slider_y_ + hue_slider_height_ + 10 };
 }
 ColorPicker::~ColorPicker() {
-    for (int i = 0; i < 16; i++) {
-        DeleteObject(colorBrush[i]);
-    }
+    
 }
 
 
@@ -244,7 +252,7 @@ void ColorPicker::drawPreview(HDC hdc) {
     // 미리보기 영역을 흰색으로 지우기
     FillRect(hdc, &previewRect, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-    // 새로운 굵기로 선을 그리기
+    // selectedColor를 사용하여 펜 생성
     HPEN pen = CreatePen(PS_SOLID, thickness, selectedColor);
     HGDIOBJ oldPen = SelectObject(hdc, pen);
 
@@ -257,7 +265,6 @@ void ColorPicker::drawPreview(HDC hdc) {
     SelectObject(hdc, oldPen);
     DeleteObject(pen);
 }
-
 void ColorPicker::handleColorSelection(HWND hWnd, int x, int y) {
     // 클릭된 좌표가 색상 사각형 내부인지 확인하여 선택된 색상 업데이트
     for (int i = 0; i < 16; i++) {
@@ -345,4 +352,25 @@ Color ColorPicker::HSVToRGB(double h, double s, double v)
 }
 COLORREF ColorPicker::getSelectedColor() {
     return selectedColor;
+}
+
+// 슬라이더 핸들을 반환하는 메서드
+HWND ColorPicker::getSliderHandle() {
+    return hSlider;
+}
+
+// 미리보기 영역의 RECT를 반환하는 메서드
+RECT ColorPicker::getPreviewRect() const {
+    return previewRect;
+}
+
+// 슬라이더 위치에 따른 굵기 값을 업데이트하는 메서드
+void ColorPicker::updateThickness() {
+    thickness = SendMessage(hSlider, TBM_GETPOS, 0, 0);
+    PenThickness::setPenWidth(thickness);  // PenThickness 클래스의 굵기 값 설정
+    InvalidateRect(hWnd, &previewRect, TRUE);  // 미리보기 영역 다시 그리기 요청
+}
+void ColorPicker::setThickness(int thickness) {
+    this->thickness = thickness;
+    InvalidateRect(hWnd, &previewRect, TRUE);
 }

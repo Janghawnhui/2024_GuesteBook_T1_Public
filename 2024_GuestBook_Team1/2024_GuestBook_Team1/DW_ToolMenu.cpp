@@ -175,13 +175,13 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 		}
 		/// 색상 버튼 2
 		else if (IntersectRect(&a, &mouse, &colorButton2.rectButton)) {
-			dwColorBox->CreatePop(tWnd, 50, 50, 200, 200);
+			dwColorBox->CreatePop(tWnd, 50, 50, 300, 400);
 			selectedColor2 = dwColorBox->getSelectedColor();
 			selectedColorButton = &colorButton2;
 		}
 		/// 색상 버튼 3
 		else if (IntersectRect(&a, &mouse, &colorButton3.rectButton)) {
-			dwColorBox->CreatePop(tWnd, 50, 50, 200, 200);
+			dwColorBox->CreatePop(tWnd, 50, 50, 300, 400);
 			selectedColor3 = dwColorBox->getSelectedColor();
 			selectedColorButton = &colorButton3;
 		}
