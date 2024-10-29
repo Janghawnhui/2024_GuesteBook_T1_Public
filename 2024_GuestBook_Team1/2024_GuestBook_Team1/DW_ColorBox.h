@@ -7,6 +7,7 @@
 class DW_ColorBox : public ChildWindow
 {
 public:
+	DW_ColorBox();
 	DW_ColorBox(HINSTANCE hInstance);
 	void CreatePop(HWND hParentWnd, int x, int y, int width, int height);
 
@@ -18,3 +19,4 @@ protected:
 	RECT BoxRT;
 	ColorPicker* colorPicker;
 };
+

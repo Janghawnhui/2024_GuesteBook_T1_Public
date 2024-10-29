@@ -88,7 +88,8 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 	{
 		function = make_unique<Function>();
 		colorPalette = make_unique<ColorPalette>();
-
+		colorBox = make_unique<DW_ColorBox>();
+	
 		/// 프로그램 실행 시 이펙트 적용할 아이콘 설정
 		selectedBrushButton = &basicPenButton;	/// 기본 펜 버튼 설정
 		selectedIcon = IDI_PEN_ICON;			/// 기본 펜 아이콘 설정
@@ -165,7 +166,7 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 
 		/// 색상 버튼 1
 		else if (IntersectRect(&a, &mouse, &colorButton1.rectButton)) {
-			if (Function::penNum == 0) { colorPalette->colorSelect(tWnd, 0); }
+			if (Function::penNum == 0) { colorBox->CreatePop(tWnd, 300, 100, 300, 400); }
 			else { Function::penNum = 0; }
 
 			selectedColorButton = &colorButton1;	/// 선택한 컬러버튼의 객체 저장

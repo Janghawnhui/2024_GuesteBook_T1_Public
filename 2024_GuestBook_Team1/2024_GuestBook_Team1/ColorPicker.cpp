@@ -1,12 +1,17 @@
 #include "ColorPicker.h"
 using namespace Gdiplus;
 
+
 ColorPicker::ColorPicker(HWND hWnd) {
+
+
 
     this->hWnd = hWnd;
 
     palette_width_ = 200;
     palette_height_ = 200;
+    hue_slider_width_ = 30;
+    hue_slider_height_ = 200;
 
     s_ = 0;
     v_ = 1.0f;
@@ -60,6 +65,15 @@ void ColorPicker::Draw(HDC hdc)
 {
 
         Graphics graphics(hdc);
+
+        Pen black_pen(Color(255, 0, 0, 0));                 //팔레트 선택 바깥쪽 윤곽선
+        Pen white_pen(Color(255, 255, 255, 255));           // 팔레트 선택 안쪽 윤곽선
+        Pen thumb_contour_pen(Color(255, 149, 149, 149));   //슬라이더 윤곽선
+        SolidBrush white_brush(Color(255, 255, 255, 255));  
+        SolidBrush black_brush(Color(255, 0, 0, 0));
+        SolidBrush white_alpha_brush(Color(50, 255, 255, 255));
+        SolidBrush background_brush(Color(255, 238, 238, 238));
+
         palette_x_ = 10;
         palette_y_ = 10;
         SolidBrush palette_background(Color(255, 255, 255, 255));
@@ -79,48 +93,52 @@ void ColorPicker::Draw(HDC hdc)
             Color(0, 0, 0, 0),
             Color(255, 0, 0, 0));
         graphics.FillRectangle(&palette_vertical, palette_x_, palette_y_, palette_width_, palette_height_);
+        
+        hue_slider_x_ = palette_x_ + palette_width_ + 20;
+        hue_slider_y_ = palette_y_;
+
+        graphics.FillRectangle(&white_brush, hue_slider_x_, hue_slider_y_, hue_slider_width_, hue_slider_height_);
+
+        Image hue_slider_image(L"ImgResource/Hue.png");
+        graphics.DrawImage(&hue_slider_image, hue_slider_x_, hue_slider_y_, hue_slider_width_, hue_slider_height_);
+
+        Point left_points[] = {
+           Point(hue_slider_x_, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_),
+           Point(hue_slider_x_ - 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ + 5),
+           Point(hue_slider_x_ - 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ - 5) };
+
+        graphics.FillPolygon(&white_brush, left_points, 3);
+        graphics.DrawPolygon(&thumb_contour_pen, left_points, 3);
+
+        Point right_points[] = {
+            Point(hue_slider_x_ + hue_slider_width_, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_),
+            Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ + 5),
+            Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ - 5) };
+
+        graphics.FillPolygon(&white_brush, right_points, 3);
+        graphics.DrawPolygon(&thumb_contour_pen, right_points, 3);
 
 }
 ColorPicker::~ColorPicker() {
     for (int i = 0; i < 16; i++) {
-        DeleteObject(colorBrush[i]);
+        if (colorBrush[i]) {  // 브러시가 유효할 경우에만 삭제
+            DeleteObject(colorBrush[i]);
+        }
     }
 }
 
-//void ColorPicker::showPicker(HWND parentWnd) {
-//    // 컬러 피커 창 생성 및 고정된 크기로 설정
-//    WNDCLASS wc = { 0 };
-//    wc.lpfnWndProc = ColorPickerWndProc;
-//    wc.hInstance = GetModuleHandle(NULL);
-//    wc.lpszClassName = L"ColorPickerClass";
-//    RegisterClass(&wc);
-//
-//    hWnd = CreateWindowEx(0, L"ColorPickerClass", L"Color Picker",
-//        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-//        CW_USEDEFAULT, CW_USEDEFAULT, 300, 400,
-//        parentWnd, NULL, GetModuleHandle(NULL), this);
-//
-//    // 슬라이더 생성
-//    hSlider = CreateWindowEx(0, TRACKBAR_CLASS, L"Thickness",
-//        WS_CHILD | WS_VISIBLE | TBS_HORZ,
-//        10, 230, 200, 30,
-//        hWnd, NULL, GetModuleHandle(NULL), NULL);
-//
-//    SendMessage(hSlider, TBM_SETRANGE, TRUE, MAKELONG(1, 20));  // 굵기 범위 1-20 설정
-//    SendMessage(hSlider, TBM_SETPOS, TRUE, thickness);          // 초기 굵기 값 설정
-//}
-/*
 void ColorPicker::showPicker(HWND parentWnd) {
     // 슬라이더 생성
-    hSlider = CreateWindowEx(0, TRACKBAR_CLASS, L"Thickness",
+    hSlider = CreateWindowEx(0, TRACKBAR_CLASS, L"Thickness ",
         WS_CHILD | WS_VISIBLE | TBS_HORZ,
         10, 230, 200, 30,
         parentWnd, NULL, GetModuleHandle(NULL), NULL);
+  
 
     SendMessage(hSlider, TBM_SETRANGE, TRUE, MAKELONG(1, 20));  // 굵기 범위 1-20 설정
     SendMessage(hSlider, TBM_SETPOS, TRUE, thickness);          // 초기 굵기 값 설정
 }
-*/
+
 LRESULT CALLBACK ColorPicker::ColorPickerWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     ColorPicker* picker = reinterpret_cast<ColorPicker*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
@@ -128,11 +146,14 @@ LRESULT CALLBACK ColorPicker::ColorPickerWndProc(HWND hWnd, UINT message, WPARAM
     case WM_CREATE:
         picker = reinterpret_cast<ColorPicker*>(((LPCREATESTRUCT)lParam)->lpCreateParams);
         SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)picker);
+        picker->showPicker(hWnd);
         break;
 
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
+
+        Graphics graphics(hdc);
 
         // 색상 영역 그리기
         picker->drawColors(hdc);

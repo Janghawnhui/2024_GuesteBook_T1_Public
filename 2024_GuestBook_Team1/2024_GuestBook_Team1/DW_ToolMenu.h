@@ -4,6 +4,8 @@
 #include "Function.h"
 #include <thread>
 
+
+#include "DW_ColorBox.h"
 #include "ColorPalette.h"
 #include "MakeButton.h"
 
@@ -24,6 +26,7 @@ protected:
 
     std::unique_ptr<Function> function;
     std::unique_ptr<ColorPalette> colorPalette;
+    std::unique_ptr<DW_ColorBox> colorBox;
 
     HRGN roundRgn;
 };
