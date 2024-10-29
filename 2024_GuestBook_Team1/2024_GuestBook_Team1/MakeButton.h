@@ -7,7 +7,7 @@ class MakeButton
 {
 private:
 	int icon;		/// 아이콘 지정 멤버 변수
-
+	COLORREF color;
 public:
 	RECT rectButton;
 	bool toggleState;	/// doubleImgButton 전환 멤버 변수
@@ -22,7 +22,7 @@ public:
 	void drawRectButton(HDC tHdc, int icon);
 
 	/// 원형 버튼 그리기 (컬러 버튼)
-	void drawEllipseButton(HDC tHdc, COLORREF test);
+	void drawEllipseButton(HDC tHdc, COLORREF color);
 
 	/// 클릭시 이미지가 바뀌는 버튼
 	void doubleImgButton(HDC tHdc, int icon1, int icon2);

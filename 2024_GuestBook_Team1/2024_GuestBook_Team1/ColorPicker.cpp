@@ -1,10 +1,7 @@
 #include "ColorPicker.h"
 using namespace Gdiplus;
 
-
 ColorPicker::ColorPicker(HWND hWnd) {
-
-
 
     this->hWnd = hWnd;
 
@@ -69,7 +66,7 @@ void ColorPicker::Draw(HDC hdc)
         Pen black_pen(Color(255, 0, 0, 0));                 //팔레트 선택 바깥쪽 윤곽선
         Pen white_pen(Color(255, 255, 255, 255));           // 팔레트 선택 안쪽 윤곽선
         Pen thumb_contour_pen(Color(255, 149, 149, 149));   //슬라이더 윤곽선
-        SolidBrush white_brush(Color(255, 255, 255, 255));  
+        SolidBrush white_brush(Color(255, 255, 255, 255));
         SolidBrush black_brush(Color(255, 0, 0, 0));
         SolidBrush white_alpha_brush(Color(50, 255, 255, 255));
         SolidBrush background_brush(Color(255, 238, 238, 238));
@@ -93,7 +90,7 @@ void ColorPicker::Draw(HDC hdc)
             Color(0, 0, 0, 0),
             Color(255, 0, 0, 0));
         graphics.FillRectangle(&palette_vertical, palette_x_, palette_y_, palette_width_, palette_height_);
-        
+
         hue_slider_x_ = palette_x_ + palette_width_ + 20;
         hue_slider_y_ = palette_y_;
 
@@ -118,22 +115,21 @@ void ColorPicker::Draw(HDC hdc)
         graphics.FillPolygon(&white_brush, right_points, 3);
         graphics.DrawPolygon(&thumb_contour_pen, right_points, 3);
 
+
 }
 ColorPicker::~ColorPicker() {
     for (int i = 0; i < 16; i++) {
-        if (colorBrush[i]) {  // 브러시가 유효할 경우에만 삭제
-            DeleteObject(colorBrush[i]);
-        }
+        DeleteObject(colorBrush[i]);
     }
 }
 
+
 void ColorPicker::showPicker(HWND parentWnd) {
     // 슬라이더 생성
-    hSlider = CreateWindowEx(0, TRACKBAR_CLASS, L"Thickness ",
+    hSlider = CreateWindowEx(0, TRACKBAR_CLASS, L"Thickness",
         WS_CHILD | WS_VISIBLE | TBS_HORZ,
         10, 230, 200, 30,
         parentWnd, NULL, GetModuleHandle(NULL), NULL);
-  
 
     SendMessage(hSlider, TBM_SETRANGE, TRUE, MAKELONG(1, 20));  // 굵기 범위 1-20 설정
     SendMessage(hSlider, TBM_SETPOS, TRUE, thickness);          // 초기 굵기 값 설정
@@ -146,6 +142,8 @@ LRESULT CALLBACK ColorPicker::ColorPickerWndProc(HWND hWnd, UINT message, WPARAM
     case WM_CREATE:
         picker = reinterpret_cast<ColorPicker*>(((LPCREATESTRUCT)lParam)->lpCreateParams);
         SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)picker);
+
+        // 슬라이더를 한 번만 생성하도록 showPicker 호출
         picker->showPicker(hWnd);
         break;
 
@@ -153,16 +151,9 @@ LRESULT CALLBACK ColorPicker::ColorPickerWndProc(HWND hWnd, UINT message, WPARAM
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
 
-        Graphics graphics(hdc);
-
-        // 색상 영역 그리기
         picker->drawColors(hdc);
-
-        // 굵기 영역 텍스트 그리기
-       // TextOut(hdc, 10, 200, L"Thickness:", 9);
-
-        // 미리보기 영역 그리기
         picker->drawPreview(hdc);
+        picker->Draw(hdc);  // 팔레트 그리기 함수
 
         EndPaint(hWnd, &ps);
         break;
@@ -311,4 +302,7 @@ Color ColorPicker::HSVToRGB(double h, double s, double v)
     }
 
     return Color(255, (BYTE)(r * 255), (BYTE)(g * 255), (BYTE)(b * 255));
+}
+COLORREF ColorPicker::getSelectedColor() {
+    return selectedColor;
 }

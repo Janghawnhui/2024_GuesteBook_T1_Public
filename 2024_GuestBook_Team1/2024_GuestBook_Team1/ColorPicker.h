@@ -21,7 +21,6 @@ private:
     RECT colorRect[16];        // 색상 선택 영역
     RECT previewRect;          // 미리보기 영역
     RECT thicknessRect;        // 굵기 선택 
-
     int palette_x_;
     int palette_y_;
     int palette_width_;
@@ -55,12 +54,6 @@ public:
     void drawThickness(HDC hdc);
     void handleColorSelection(HWND hWnd, int x, int y);
     void Draw(HDC hdc);
-
+    COLORREF getSelectedColor();
     Gdiplus::Color HSVToRGB(double h, double s, double v);
-    //void PaletteControl(POINT mouse_position);
-    //void HueSliderControl(POINT mouse_position);
-
-    //void MouseDown(POINT mouse_position);
-    //void MouseMove(POINT mouse_position);
-
 };

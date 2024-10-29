@@ -24,7 +24,10 @@ MakeButton playButton;		/// 플레이 버튼 생성
 MakeButton stopButton;		/// 중지 버튼 생성
 //MakeButton saveButton;		/// 세이브 버튼 생성
 
-ColorPalette colorGet;		/// 색상 받아오기용 인스턴스 
+std::unique_ptr<DW_ColorBox> dwColorBox;
+COLORREF selectedColor1 = RGB(255, 0, 0); // 초기 색상
+COLORREF selectedColor2 = RGB(0, 255, 0);
+COLORREF selectedColor3 = RGB(0, 0, 255);
 
 PAINTSTRUCT t_ps = { 0 };
 HBRUSH ToolBrush = nullptr;
@@ -56,6 +59,7 @@ DW_ToolMenu::DW_ToolMenu(HINSTANCE hInstance)
 	tCnt = nullptr;
 	pCnt = true;
 	roundRgn = { 0 };
+	dwColorBox = std::make_unique<DW_ColorBox>(hInstance);
 }
 
 /// 창(윈도우) 생성 시 좌표 지정
@@ -87,9 +91,8 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 	case WM_CREATE:
 	{
 		function = make_unique<Function>();
-		colorPalette = make_unique<ColorPalette>();
-		colorBox = make_unique<DW_ColorBox>();
 	
+
 		/// 프로그램 실행 시 이펙트 적용할 아이콘 설정
 		selectedBrushButton = &basicPenButton;	/// 기본 펜 버튼 설정
 		selectedIcon = IDI_PEN_ICON;			/// 기본 펜 아이콘 설정
@@ -165,35 +168,24 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 		}
 
 		/// 색상 버튼 1
-		else if (IntersectRect(&a, &mouse, &colorButton1.rectButton)) {
-			if (Function::penNum == 0) { colorBox->CreatePop(tWnd, 300, 100, 300, 400); }
-			else { Function::penNum = 0; }
-
-			selectedColorButton = &colorButton1;	/// 선택한 컬러버튼의 객체 저장
+		if (IntersectRect(&a, &mouse, &colorButton1.rectButton)) {
+			dwColorBox->CreatePop(tWnd, 50, 50, 300, 400);  // DW_ColorBox를 열어서 색상 선택
+			selectedColor1 = dwColorBox->getSelectedColor();  // getSelectedColor() 사용
+			selectedColorButton = &colorButton1;
 		}
 		/// 색상 버튼 2
 		else if (IntersectRect(&a, &mouse, &colorButton2.rectButton)) {
-			if (Function::penNum == 1) { colorPalette->colorSelect(tWnd, 1); }
-			else { Function::penNum = 1; }
-
+			dwColorBox->CreatePop(tWnd, 50, 50, 200, 200);
+			selectedColor2 = dwColorBox->getSelectedColor();
 			selectedColorButton = &colorButton2;
 		}
 		/// 색상 버튼 3
 		else if (IntersectRect(&a, &mouse, &colorButton3.rectButton)) {
-			if (Function::penNum == 2) { colorPalette->colorSelect(tWnd, 2); }
-			else { Function::penNum = 2; }
-
+			dwColorBox->CreatePop(tWnd, 50, 50, 200, 200);
+			selectedColor3 = dwColorBox->getSelectedColor();
 			selectedColorButton = &colorButton3;
 		}
 
-		/// 지우개 버튼 
-		else if (IntersectRect(&a, &mouse, &eraseButton.rectButton)) {
-
-			if (function->getDrawLInfoEmpty()) { break; }
-			if (!function->getIsReplay()) {
-				SendMessage(Function::hWnd, WM_COMMAND, TL_CLEAR_BT, 0);
-			}
-		}
 
 		/// 리플레이 버튼
 		else if (IntersectRect(&a, &mouse, &playButton.rectButton)) {
@@ -334,9 +326,9 @@ LRESULT DW_ToolMenu::HandleMessage(HWND tWnd, UINT message, WPARAM wParam, LPARA
 				selectedColorButton->clickEffectPen(IDI_COLOREFFECT_ICON, memDC);
 			}
 
-			colorButton1.drawEllipseButton(memDC, colorGet.getColor(0));	/// 색상 버튼 1 미리보기
-			colorButton2.drawEllipseButton(memDC, colorGet.getColor(1));	/// 색상 버튼 2 미리보기
-			colorButton3.drawEllipseButton(memDC, colorGet.getColor(2));	/// 색상 버튼 3 미리보기
+			colorButton1.drawEllipseButton(memDC, dwColorBox->getSelectedColor());  // 색상 버튼 1
+			colorButton2.drawEllipseButton(memDC, dwColorBox->getSelectedColor());  // 색상 버튼 2
+			colorButton3.drawEllipseButton(memDC, dwColorBox->getSelectedColor());  // 색상 버튼 3
 
 			MoveToEx(memDC, midPoint + 98, 8, nullptr);
 			LineTo(memDC, midPoint + 98, 42);

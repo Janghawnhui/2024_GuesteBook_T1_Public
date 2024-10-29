@@ -30,6 +30,8 @@
 #define WATERCOLOR 305
 
 // 펜 굵기 
+#define IDC_OK_BUTTON			506 // 확인 버튼 ID
+#define IDC_CLOSE_BUTTON		505 // 닫기 버튼 ID
 #define IDD_PEN_THICKNESS       504
 #define IDC_THICKNESS_SLIDER    503  // 슬라이더의 ID
 #define IDC_THICKNESS_EDIT      502  // 에디트 박스의 ID

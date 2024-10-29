@@ -45,8 +45,12 @@ INT_PTR CALLBACK PenThickness::dlgProc(HWND hDlg, UINT message, WPARAM wParam, L
             EndDialog(hDlg, IDOK);
             return TRUE;
 
-        case IDCANCEL:
-            EndDialog(hDlg, IDCANCEL);
+        case IDC_CLOSE_BUTTON:
+            EndDialog(hDlg, IDC_CLOSE_BUTTON);
+            return TRUE;
+
+        case IDC_OK_BUTTON:
+            EndDialog(hDlg, IDC_OK_BUTTON);
             return TRUE;
         }
         break;

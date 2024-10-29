@@ -3,11 +3,11 @@
 #include "ChildWindow.h"
 #include "Function.h"
 #include <thread>
+#include <memory> 
 
-
-#include "DW_ColorBox.h"
 #include "ColorPalette.h"
 #include "MakeButton.h"
+#include "DW_ColorBox.h"
 
 class DW_ToolMenu : public ChildWindow
 {
@@ -25,8 +25,8 @@ protected:
     RECT toolRT;
 
     std::unique_ptr<Function> function;
-    std::unique_ptr<ColorPalette> colorPalette;
-    std::unique_ptr<DW_ColorBox> colorBox;
+    std::unique_ptr<DW_ColorBox> dwColorBox;
+    std::unique_ptr<ColorPicker> ColorPicker;
 
     HRGN roundRgn;
 };
