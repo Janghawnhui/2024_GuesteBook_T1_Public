@@ -22,40 +22,39 @@ LRESULT CALLBACK DrowWindow::WndProcCB(HWND hWnd, UINT message, WPARAM wParam, L
 void DW_ColorBox::CreatePop(HWND hParentWnd, int x, int y, int width, int height)
 {
 
-    //PenThickness thicknessDialog;
-    //thicknessDialog.setThicknessChangedCallback([this](int newThickness) {
-    //    colorPicker->setThickness(newThickness);
-    //    RECT previewRect = colorPicker->getPreviewRect();
-    //    InvalidateRect(bWnd, &previewRect, TRUE);
+    PenThickness thicknessDialog;
+    thicknessDialog.setThicknessChangedCallback([this](int newThickness) {
+        colorPicker->setThickness(newThickness);
+        RECT previewRect = colorPicker->getPreviewRect();
+        InvalidateRect(WndFunc::colorWnd, &previewRect, TRUE);
 
-    //    });
+        });
 
-    //colorPicker->setThickness(PenThickness::getPenWidth());
-    // ColorPicker에 펜 두께 설정
-    //int initialThickness = PenThickness::getPenWidth();
-    // CreateWindowEx를 사용하여 닫기 버튼을 생성하는 것은 이 위치에서 수행해야 함.
+    colorPicker->setThickness(PenThickness::getPenWidth());
+     //ColorPicker에 펜 두께 설정
+    int initialThickness = PenThickness::getPenWidth();
+     //CreateWindowEx를 사용하여 닫기 버튼을 생성하는 것은 이 위치에서 수행해야 함.
 
-    //closeButton = CreateWindowEx(
-    //    0, L"BUTTON", L"취소",
-    //    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_OWNERDRAW,
-    //    200, 350, 100, 50,  // 위치 및 크기 설정
-    //    bWnd,
-    //    (HMENU)IDC_CLOSE_BUTTON,  // 닫기 버튼 ID
-    //    bInst, NULL
-    //);
+    closeButton = CreateWindowEx(
+        0, L"BUTTON", L"취소",
+        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_OWNERDRAW,
+        200, 350, 100, 50,  // 위치 및 크기 설정
+        WndFunc::colorWnd,
+        (HMENU)IDC_CLOSE_BUTTON,  // 닫기 버튼 ID
+        bInst, NULL
+    );
 }
 
 COLORREF DW_ColorBox::getSelectedColor() const {
-   return RGB(255, 255, 255); // 기본 색상으로 흰색 사용
+    return /*colorPicker ? colorPicker->getSelectedColor() :*/RGB(255, 255, 255); // 기본 색상으로 흰색 사용
 }
-
 
 LRESULT DrowWindow::handleMessageCB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     POINT mouse_position;
 
     switch (message) {
     case WM_CREATE: {
-        //colorPicker->showPicker(pWnd);  // WM_CREATE에서 슬라이더 생성
+        //colorPicker->showPicker(hWnd);  // WM_CREATE에서 슬라이더 생성
         break;
     }
     case WM_PAINT: {
@@ -108,7 +107,7 @@ LRESULT DrowWindow::handleMessageCB(HWND hWnd, UINT message, WPARAM wParam, LPAR
         mouse_position.y = HIWORD(lParam);
 
         // ColorPicker에서 색상 선택 업데이트 후 영역 다시 그리기
-        //colorPicker->handleColorSelection(pWnd, mouse_position.x, mouse_position.y);
+        //colorPicker->handleColorSelection(hWnd, mouse_position.x, mouse_position.y);
         //colorPicker->MouseDown(mouse_position);
         break;
     }

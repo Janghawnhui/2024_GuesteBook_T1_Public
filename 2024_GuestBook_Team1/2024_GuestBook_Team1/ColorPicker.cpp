@@ -3,7 +3,7 @@
 ColorPicker::ColorPicker(HWND hWnd) {
 
     this->hWnd = hWnd;
-    
+
     is_color_picker_open_ = true;
     palette_width_ = 200;
     palette_height_ = 200;
@@ -123,9 +123,8 @@ void ColorPicker::Draw(HDC hdc)
     Gdiplus::SolidBrush white_alpha_brush(Gdiplus::Color(50, 255, 255, 255));
     Gdiplus::SolidBrush background_brush(Gdiplus::Color(255, 238, 238, 238));
 
-    // 어색한 팔레트 자리 찾아주기 10 > 20으로 변경
-    palette_x_ = 20;
-    palette_y_ = 20;
+    palette_x_ = 10;
+    palette_y_ = 10;
     Gdiplus::SolidBrush palette_background(Gdiplus::Color(255, 255, 255, 255));
     graphics.FillRectangle(&palette_background, palette_x_, palette_y_, palette_width_, palette_height_);
 
@@ -158,7 +157,7 @@ void ColorPicker::Draw(HDC hdc)
     graphics.DrawImage(&hue_slider_image, hue_slider_x_, hue_slider_y_, hue_slider_width_, hue_slider_height_);
 
     Gdiplus::Point left_points[] = {
-        Gdiplus::Point(hue_slider_x_, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_),
+       Gdiplus::Point(hue_slider_x_, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_),
         Gdiplus::Point(hue_slider_x_ - 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ + 5),
         Gdiplus::Point(hue_slider_x_ - 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ - 5) };
 
@@ -166,9 +165,9 @@ void ColorPicker::Draw(HDC hdc)
     graphics.DrawPolygon(&thumb_contour_pen, left_points, 3);
 
     Gdiplus::Point right_points[] = {
-        Gdiplus::Point(hue_slider_x_ + hue_slider_width_, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_),
-        Gdiplus::Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ + 5),
-        Gdiplus::Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ - 5) };
+       Gdiplus::Point(hue_slider_x_ + hue_slider_width_, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_),
+       Gdiplus::Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ + 5),
+       Gdiplus::Point(hue_slider_x_ + hue_slider_width_ + 5, hue_slider_y_ + (h_ / 360.0f) * hue_slider_height_ - 5) };
 
 
     graphics.FillPolygon(&white_brush, right_points, 3);

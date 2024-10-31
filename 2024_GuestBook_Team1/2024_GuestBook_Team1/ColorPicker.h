@@ -1,11 +1,13 @@
 #pragma once
 #pragma comment(lib, "Gdiplus.lib")
 
+
 #include <windows.h>
 #include <commctrl.h>
 #include <gdiplus.h>
 #include <cmath>
 #include "PenThickness.h"
+
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif
@@ -69,6 +71,7 @@ public:
     void MouseUp();
     void MouseDown(POINT mouse_position);
     void MouseMove(POINT mouse_position);
+
     HWND getSliderHandle();       // 슬라이더 핸들 반환
     RECT getPreviewRect() const;  // 미리보기 영역 반환
     void updateThickness();       // 슬라이더 위치에 따른 굵기 업데이트

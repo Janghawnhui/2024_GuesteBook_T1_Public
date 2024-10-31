@@ -42,13 +42,14 @@
 #include "ColorPicker.h"
 #include "PenThickness.h"
 #include "Struct.h"
+#include "WndFunc.h"
 #include <vector>
 #include <memory>
 
 
 class DW_ColorBox {
 public:
-	//DW_ColorBox(HINSTANCE hInstance);
+	DW_ColorBox(HINSTANCE hInstance);
     void CreatePop(HWND hParentWnd, int x, int y, int width, int height);
 	COLORREF getSelectedColor() const;
 	std::vector<PINFO>* penMemory;
@@ -61,6 +62,6 @@ private:
     HWND OKButton;
     HINSTANCE bInst;
 
-    //void drawTitleBar(HDC hdc);
+    void drawTitleBar(HDC hdc);
 
 };

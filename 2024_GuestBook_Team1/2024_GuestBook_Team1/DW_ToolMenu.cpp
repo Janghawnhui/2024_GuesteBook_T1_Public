@@ -16,7 +16,7 @@ void DrowWindow::createWindowCB(int left, int top, int right, int bottom, HWND p
 
 
         if (!RegisterClass(&wc5)) {
-            MessageBox(NULL, L"side 바 등록 실패", L"Error", MB_OK);
+            MessageBox(NULL, L"컬러 바 등록 실패", L"Error", MB_OK);
             return;
         }
 
@@ -195,7 +195,7 @@ LRESULT DrowWindow::handleMessageTB(HWND hWnd, UINT message, WPARAM wParam, LPAR
             selectedBrushButton = &waterpenButton;
             selectedIcon = IDI_WATERPEN_ICON;
         }
-        // 색상 버튼 누를 시 창 생성(1, 2, 3)
+
         if (IntersectRect(&a, &mouse, &colorButton1.rectButton)) {
             createWindowCB(50, 50, 300, 400,WndFunc::drowWnd);  // DW_ColorBox를 열어서 색상 선택
             selectedColor1 = dwColorBox->getSelectedColor();  // getSelectedColor() 사용
@@ -203,13 +203,13 @@ LRESULT DrowWindow::handleMessageTB(HWND hWnd, UINT message, WPARAM wParam, LPAR
         }
         /// 색상 버튼 2
         else if (IntersectRect(&a, &mouse, &colorButton2.rectButton)) {
-            createWindowCB(50, 50, 300, 400, WndFunc::drowWnd);
+            dwColorBox->CreatePop(hWnd, 50, 50, 300, 400);
             selectedColor2 = dwColorBox->getSelectedColor();
             selectedColorButton = &colorButton2;
         }
         /// 색상 버튼 3
         else if (IntersectRect(&a, &mouse, &colorButton3.rectButton)) {
-            createWindowCB(50, 50, 300, 400, WndFunc::drowWnd);
+            dwColorBox->CreatePop(hWnd, 50, 50, 300, 400);
             selectedColor3 = dwColorBox->getSelectedColor();
             selectedColorButton = &colorButton3;
         }

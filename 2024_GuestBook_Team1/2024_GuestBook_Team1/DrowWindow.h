@@ -4,6 +4,8 @@
 #include <memory>
 #include "Resource.h"
 #include "WndFunc.h"
+#include "ColorPicker.h"
+
 
 class DrowWindow {
 public:
@@ -55,5 +57,6 @@ private:
     RECT drowRT;
     COLORREF bkColor;
     std::unique_ptr<WndFunc> wndFunc;
- 
+    std::unique_ptr<ColorPicker> colorPicker;
+
 };
