@@ -195,7 +195,7 @@ LRESULT DrowWindow::handleMessageTB(HWND hWnd, UINT message, WPARAM wParam, LPAR
             selectedBrushButton = &waterpenButton;
             selectedIcon = IDI_WATERPEN_ICON;
         }
-
+        // 색상 버튼 누를 시 창 생성(1, 2, 3)
         if (IntersectRect(&a, &mouse, &colorButton1.rectButton)) {
             createWindowCB(50, 50, 300, 400,WndFunc::drowWnd);  // DW_ColorBox를 열어서 색상 선택
             selectedColor1 = dwColorBox->getSelectedColor();  // getSelectedColor() 사용
@@ -203,13 +203,13 @@ LRESULT DrowWindow::handleMessageTB(HWND hWnd, UINT message, WPARAM wParam, LPAR
         }
         /// 색상 버튼 2
         else if (IntersectRect(&a, &mouse, &colorButton2.rectButton)) {
-            dwColorBox->CreatePop(hWnd, 50, 50, 300, 400);
+            createWindowCB(50, 50, 300, 400, WndFunc::drowWnd);
             selectedColor2 = dwColorBox->getSelectedColor();
             selectedColorButton = &colorButton2;
         }
         /// 색상 버튼 3
         else if (IntersectRect(&a, &mouse, &colorButton3.rectButton)) {
-            dwColorBox->CreatePop(hWnd, 50, 50, 300, 400);
+            createWindowCB(50, 50, 300, 400, WndFunc::drowWnd);
             selectedColor3 = dwColorBox->getSelectedColor();
             selectedColorButton = &colorButton3;
         }
