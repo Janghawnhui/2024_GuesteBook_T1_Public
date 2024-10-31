@@ -2,51 +2,7 @@
 
 #include "DW_NameBar.h"
 
-
-void DrowWindow::createWindowCB(int left, int top, int right, int bottom, HWND parent)
-{
-    static bool isClassRegistered = false;  // 클래스가 이미 등록되었는지 확인
-
-    if (!isClassRegistered) {
-        WNDCLASS wc5 = {};
-        wc5.lpfnWndProc = WndProcCB;  // 네임바 메세지 처리하는 정적 메서드
-        wc5.lpszClassName = L"CustomNameWindowClass2";
-        wc5.hInstance = hInst;
-        wc5.hbrBackground = CreateSolidBrush(RGB(230, 230, 230));
-
-
-        if (!RegisterClass(&wc5)) {
-            MessageBox(NULL, L"side 바 등록 실패", L"Error", MB_OK);
-            return;
-        }
-
-        isClassRegistered = true;  // 클래스가 등록됨을 표시
-    }
-
-
-    WndFunc::colorWnd = CreateWindow(
-        L"CustomNameWindowClass2",
-        L"Name Window",
-        WS_CHILD | WS_VISIBLE,
-        left, top,
-        right,
-        bottom,
-        parent,
-        nullptr,
-        hInst,
-        reinterpret_cast<LPVOID>(this)  // this 포인터 전달
-    );
-    if (!WndFunc::colorWnd) {
-        DWORD error = GetLastError();
-        wchar_t buf[256];
-        wsprintf(buf, L"사이드 바 생성 실패: 오류 코드 %d", error);
-        MessageBox(NULL, buf, L"Error", MB_OK);
-        return;
-    }
-    ShowWindow(WndFunc::colorWnd, SW_SHOW);
-}
-
-/// 툴바 정적 메서드
+/// 네임 바 정적 메서드
 LRESULT CALLBACK DrowWindow::WndProcTB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     DrowWindow* pThis = nullptr;
 
@@ -78,11 +34,6 @@ MakeButton waterpenButton(210, 10, 240, 40);
 MakeButton colorButton1;
 MakeButton colorButton2;
 MakeButton colorButton3;
-
-std::unique_ptr<DW_ColorBox> dwColorBox;
-COLORREF selectedColor1 = RGB(255, 0, 0); // 초기 색상
-COLORREF selectedColor2 = RGB(0, 255, 0);
-COLORREF selectedColor3 = RGB(0, 0, 255);
 
 /// 아래 3개의 버튼은 리플레이시 or 창 크기 변경 시 위치 이동이 있어 
 /// DW_ToolMenu::Create에서 초기 좌표 생성
@@ -137,9 +88,6 @@ LRESULT DrowWindow::handleMessageTB(HWND hWnd, UINT message, WPARAM wParam, LPAR
         eraseButton.setCoordinate(midPoint + 50, 10, midPoint + 80, 40);
         playButton.setCoordinate(midPoint + 115, 10, midPoint + 145, 40);
         stopButton.setCoordinate(midPoint + 160, 10, midPoint + 190, 40);
-
-
-
         break;
     }
     case WM_LBUTTONDOWN:
@@ -196,21 +144,30 @@ LRESULT DrowWindow::handleMessageTB(HWND hWnd, UINT message, WPARAM wParam, LPAR
             selectedIcon = IDI_WATERPEN_ICON;
         }
 
-        if (IntersectRect(&a, &mouse, &colorButton1.rectButton)) {
-            createWindowCB(50, 50, 300, 400,WndFunc::drowWnd);  // DW_ColorBox를 열어서 색상 선택
-            selectedColor1 = dwColorBox->getSelectedColor();  // getSelectedColor() 사용
-            selectedColorButton = &colorButton1;
+        /// 색상 버튼 1
+        else if (IntersectRect(&a, &mouse, &colorButton1.rectButton)) {
+            /*
+            if (Function::penNum == 0) { colorPalette->colorSelect(tWnd, 0); }
+            else { Function::penNum = 0; }
+            */
+            createWindowCP(0, 0,100, 100, WndFunc::canvasWnd);
+            selectedColorButton = &colorButton1;   /// 선택한 컬러버튼의 객체 저장
         }
         /// 색상 버튼 2
         else if (IntersectRect(&a, &mouse, &colorButton2.rectButton)) {
-            dwColorBox->CreatePop(hWnd, 50, 50, 300, 400);
-            selectedColor2 = dwColorBox->getSelectedColor();
+            /*
+            if (Function::penNum == 1) { colorPalette->colorSelect(tWnd, 1); }
+            else { Function::penNum = 1; }
+            */
+            ShowWindow(WndFunc::colorWnd, SW_HIDE);
             selectedColorButton = &colorButton2;
         }
         /// 색상 버튼 3
         else if (IntersectRect(&a, &mouse, &colorButton3.rectButton)) {
-            dwColorBox->CreatePop(hWnd, 50, 50, 300, 400);
-            selectedColor3 = dwColorBox->getSelectedColor();
+            /*
+            if (Function::penNum == 2) { colorPalette->colorSelect(tWnd, 2); }
+            else { Function::penNum = 2; }
+            */
             selectedColorButton = &colorButton3;
         }
 

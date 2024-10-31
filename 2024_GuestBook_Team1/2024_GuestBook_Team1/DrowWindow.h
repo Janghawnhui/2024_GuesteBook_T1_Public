@@ -17,7 +17,7 @@ public:
     void createWindowTB(int left, int top, int right, int bottom, HWND parent);
     void createWindowCV(int left, int top, int right, int bottom, HWND parent);
     void createWindowSB(int left, int top, int right, int bottom, HWND parent);
-    void createWindowCB(int left, int top, int right, int bottom, HWND parent);
+    void createWindowCP(int left, int top, int right, int bottom, HWND parent);
 
     /// 네임바 정적 윈도우
     static LRESULT CALLBACK WndProcNB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 정적 윈도우 프로시저
@@ -25,9 +25,9 @@ public:
     virtual LRESULT handleMessageNB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 가상 함수로 메시지 처리
 
 
-    /// 툴바 정적 윈도우
+    /// 네임바 정적 윈도우
     static LRESULT CALLBACK WndProcTB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 정적 윈도우 프로시저
-    /// 툴바 메세지 처리 메서드
+    /// 네임바 메세지 처리 메서드
     virtual LRESULT handleMessageTB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 가상 함수로 메시지 처리
 
 
@@ -41,11 +41,10 @@ public:
     /// 사이드 메뉴  처리 메서드
     virtual LRESULT handleMessageSB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 가상 함수로 메시지 처리
 
-    // 컬러박스 정적 윈도우
-    static LRESULT CALLBACK WndProcCB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 정적 윈도우 프로시저
-    // 컬러박스  처리 메서드
-    virtual LRESULT handleMessageCB(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 가상 함수로 메시지 처리
-
+    /// 사이드 메뉴 정적 윈도우
+    static LRESULT CALLBACK WndProcCP(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 정적 윈도우 프로시저
+    /// 사이드 메뉴  처리 메서드
+    virtual LRESULT handleMessageCP(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // 가상 함수로 메시지 처리
 
 private:
     HWND hwnd;

@@ -11,7 +11,7 @@
 #include "DrowWindow.h"
 #include "FileManager.h"
 #include "Function.h"
-#include "ColorPalette.h"
+//#include "ColorPalette.h"
 #include "Struct.h"
 #include "PenThickness.h" 
 
@@ -38,7 +38,7 @@ private :
 
 	unique_ptr<Function> function;
 	unique_ptr<FileManager> fileManager;
-	unique_ptr<ColorPalette> colorPalette;
+	//unique_ptr<ColorPalette> colorPalette;
 
 	PINFO drawPInfo;
 

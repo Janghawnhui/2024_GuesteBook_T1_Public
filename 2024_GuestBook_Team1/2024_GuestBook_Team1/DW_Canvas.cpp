@@ -23,6 +23,14 @@ LRESULT CALLBACK DrowWindow::WndProcCV(HWND hWnd, UINT message, WPARAM wParam, L
 LRESULT DrowWindow::handleMessageCV(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
     {
+    case WM_LBUTTONDOWN:
+    {
+        int x = LOWORD(lParam);
+        int y = HIWORD(lParam);
+        HDC hdc = GetDC(hWnd);
+        LineTo(hdc, x, y);
+        break;
+    }
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
