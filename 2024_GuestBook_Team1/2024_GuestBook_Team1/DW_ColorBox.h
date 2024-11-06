@@ -1,66 +1,46 @@
-//#pragma once
-//class DW_ColorBox
-//{
-//};
-//
-//#pragma once
-//
-//#include "ChildWindow.h"
-//#include "Function.h"
-//#include "ColorPicker.h"
-//#include "PenThickness.h"
-//#include <vector>
-//#include <memory>
-//
-//class DW_ColorBox : public ChildWindow
-//{
-//public:
-//    DW_ColorBox(HINSTANCE hInstance);
-//    void CreatePop(HWND hParentWnd, int x, int y, int width, int height);
-//    COLORREF getSelectedColor() const;
-//    std::vector<PINFO>* penMemory;
-//
-//protected:
-//    LRESULT HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
-//
-//private:
-//    HWND bWnd;
-//    RECT BoxRT;
-//    std::unique_ptr<ColorPicker> colorPicker;
-//    HWND closeButton;
-//    HWND OKButton;
-//    HINSTANCE bInst;
-//
-//    void drawTitleBar(HDC hdc);
-//};
-
-
-#include<Windows.h>
-#include "MakeButton.h"
+#pragma once
+#include <Windows.h>
 #include "DrowWindow.h"
-#include "Function.h"
-#include "ColorPicker.h"
+#include <Windowsx.h>
+#include <cmath>
+#include <string>
+#include "DW_ToolMenu.h"
 #include "PenThickness.h"
-#include "Struct.h"
-#include <vector>
-#include <memory>
 
+struct RoundRECT {
+    int left;
+    int top;
+    int right;
+    int bottom;
+    int radiusX;
+    int radiusY;
+};
 
-class DW_ColorBox {
+class DW_ColorBox
+{
 public:
-	//DW_ColorBox(HINSTANCE hInstance);
-    void CreatePop(HWND hParentWnd, int x, int y, int width, int height);
-	COLORREF getSelectedColor() const;
-	std::vector<PINFO>* penMemory;
+    static int colorSelect;
 
-private:
-    HWND bWnd;
-    RECT BoxRT;
-    std::unique_ptr<ColorPicker> colorPicker;
-    HWND closeButton;
-    HWND OKButton;
-    HINSTANCE bInst;
+    static COLORREF colorP[3];
 
-    //void drawTitleBar(HDC hdc);
+    static int thicknessP[3];
+
+    static COLORREF getColorNum(int);
+
+    static void setColorNum(int num, COLORREF color);
+
+    static int getThicknessNum(int colorSelect);  // 굵기 값을 가져오는 메서드
+
+    static void setThicknessNum(int num, int thickness); // 굵기 값을 설정하는 메서드
+
+    void DrawColorWheel(HDC hdc, int centerX, int centerY, int radius);
+    void DrawColorBar(HDC hdc, RECT rect);
+    void DrawSelectedColor(HDC hdc);
+    void handleColorSelection(HWND hWnd, int x, int y);
+    void DrawSlider(HDC hdc, RECT rect, int value, int max);
+    void DrawThicknessSlider(HDC hdc, RECT rect, RoundRECT roundrect,int thicknessValue, int maxThickness);
+    COLORREF HSVtoRGB(double h, double s, double v);
+    void RGBtoHSV(COLORREF rgb, double& h, double& s, double& v);
 
 };
+

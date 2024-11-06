@@ -1,7 +1,7 @@
 ﻿#include "2024_GuestBook_Team1.h"
 #include <commctrl.h>
 #include "WndFunc.h"
-
+#include "MakeButton.h"
 
 #define MAX_LOADSTRING 100
 
@@ -12,9 +12,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 
 std::unique_ptr<DrowWindow> drowWnd = nullptr;
 
-HWND DrowBT = nullptr;
-HWND LoadBT = nullptr;
-HWND CreditBT = nullptr;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -77,10 +74,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpfnWndProc = WndProc;
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
+    wcex.hInstance = hInstance; 
     wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_YUHAN256));
     wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(243, 243, 243));
+    wcex.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(255,255,255));
     wcex.lpszMenuName = NULL;
     wcex.lpszClassName = szWindowClass;
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_YUHAN));
@@ -144,21 +141,83 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 
+MakeButton bt_Replay;
+MakeButton bt_Load;
+MakeButton bt_Credit;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
     case WM_CREATE:
+    {
+        /// 최상위 윈도우 핸들 생성이 윈도우 사이즈 초기화
         GetClientRect(hWnd, &WndFunc::wndSize);
+      
+        // DrowWindow 인스턴스 생성
         drowWnd = std::make_unique<DrowWindow>(1, hInst);
-        DrowBT = CreateWindowW(L"BUTTON", L"서명하기", WS_CHILD | WS_VISIBLE,
-            (WndFunc::wndSize.right / 2) - 120, (WndFunc::wndSize.bottom / 2) - 170, 240, 100, hWnd, (HMENU)DEF_DROW_BT, hInst, nullptr);
-        LoadBT = CreateWindowW(L"BUTTON", L"불러오기", WS_CHILD | WS_VISIBLE,
-            (WndFunc::wndSize.right / 2) - 120, (WndFunc::wndSize.bottom / 2) - 50, 240, 100, hWnd, (HMENU)DEF_LOAD_BT, hInst, nullptr);
-        CreditBT = CreateWindowW(L"BUTTON", L"CREDIT", WS_CHILD | WS_VISIBLE,
-            (WndFunc::wndSize.right / 2) - 120, (WndFunc::wndSize.bottom / 2) + 70, 240, 100, hWnd, (HMENU)DEF_CREDIT_BT, hInst, nullptr);
 
+        // WNDCLASS 구조체 초기화
+        WNDCLASS wc1 = {};
+        wc1.lpfnWndProc = DrowWindow::StaticWndProc;  // 정적 함수로 설정
+        wc1.hInstance = hInst;
+        wc1.hbrBackground = CreateSolidBrush(RGB(249, 243, 240));  // 노란색 브러시 설정
+        wc1.lpszClassName = DROW_CLASS;
+
+        // 클래스 등록
+        if (!RegisterClass(&wc1)) {
+            MessageBox(NULL, L"윈도우 클래스 등록 실패", L"에러", MB_OK);
+            return 1;
+        }
+
+        // 자식 창 생성
+        WndFunc::drowWnd = CreateWindow(
+            DROW_CLASS,                     // 클래스 이름
+            DROW_NAME,                      // 창 제목
+            WS_CHILD | WS_VISIBLE,          // 자식 창 스타일
+            0, 0, WndFunc::wndSize.right, WndFunc::wndSize.bottom,  // 위치와 크기 (X, Y, Width, Height)
+            hWnd,                           // 부모 창 핸들
+            NULL,                           // 메뉴 없음
+            hInst,                          // 인스턴스 핸들
+            drowWnd.get()                   // DrowWindow 객체 전달
+        );
+
+        if (WndFunc::drowWnd == nullptr) {
+            MessageBox(NULL, L"창 생성 실패", L"에러", MB_OK);
+        }
+
+
+        bt_Replay.makeMenuButton((WndFunc::wndSize.right / 2) - 450, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, DEF_DROW_BT, L"REPLAY");
+        bt_Replay.showMenuButton(hWnd, IDI_MAIN_SIGN_ICON, WndFunc::DrowBT);
+        
+        bt_Load.makeMenuButton((WndFunc::wndSize.right / 2) - 120, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, DEF_LOAD_BT, L"불러오기");
+        bt_Load.showMenuButton(hWnd, IDI_MAIN_LOAD_ICON, WndFunc::LoadBT);
+
+        bt_Credit.makeMenuButton((WndFunc::wndSize.right / 2) + 210, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, DEF_CREDIT_BT, L"CREDIT");
+        bt_Credit.showMenuButton(hWnd, IDI_MAIN_CREDIT_ICON, WndFunc::CreditBT);
+        // 버튼 스타일
+        DWORD buttonStyle = WS_CHILD | WS_VISIBLE | BS_CENTER | BS_VCENTER | BS_PUSHBUTTON;
+
+        /*
+        //WndFunc::DrowBT = CreateWindowW(L"BUTTON", L"서명하기", buttonStyle,
+         //   (WndFunc::wndSize.right / 2) - 450, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, hWnd, (HMENU)DEF_DROW_BT, hInst, nullptr);
+
+        //WndFunc::LoadBT = CreateWindowW(L"BUTTON", L"불러오기", buttonStyle,
+          //  (WndFunc::wndSize.right / 2) - 120, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, hWnd, (HMENU)DEF_LOAD_BT, hInst, nullptr);
+
+        //WndFunc::CreditBT = CreateWindowW(L"BUTTON", L"CREDIT", buttonStyle,
+          //  (WndFunc::wndSize.right / 2) + 210, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, hWnd, (HMENU)DEF_CREDIT_BT, hInst, nullptr);
+          */
+        ShowWindow(WndFunc::drowWnd, SW_HIDE);
+        ShowWindow(WndFunc::nameWnd, SW_HIDE);
+        ShowWindow(WndFunc::toolWnd, SW_HIDE);
+        ShowWindow(WndFunc::canvasWnd, SW_HIDE);
+        ShowWindow(WndFunc::sideWnd, SW_HIDE);
+        ShowWindow(WndFunc::visitListWnd, SW_HIDE);
         break;
+      
+    }
+        
 
     case WM_COMMAND:
     {
@@ -168,76 +227,51 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case DEF_DROW_BT:   // 서명하기
         {
-            // DrowWindow 인스턴스 생성
-            drowWnd = std::make_unique<DrowWindow>(1, hInst);
-
-            // WNDCLASS 구조체 초기화
-            WNDCLASS wc1 = {};
-            wc1.lpfnWndProc = DrowWindow::StaticWndProc;  // 정적 함수로 설정
-            wc1.hInstance = hInst;
-            wc1.hbrBackground = CreateSolidBrush(RGB(243, 243, 240));  // 노란색 브러시 설정
-            wc1.lpszClassName = DROW_CLASS;
-
-            // 클래스 등록
-            if (!RegisterClass(&wc1)) {
-                MessageBox(NULL, L"윈도우 클래스 등록 실패", L"에러", MB_OK);
-                return 1;
-            }
-
-            // 자식 창 생성
-            WndFunc::drowWnd = CreateWindow(
-                DROW_CLASS,                     // 클래스 이름
-                DROW_NAME,                      // 창 제목
-                WS_CHILD | WS_VISIBLE ,          // 자식 창 스타일
-                0, 0, WndFunc::wndSize.right, WndFunc::wndSize.bottom,  // 위치와 크기 (X, Y, Width, Height)
-                hWnd,                           // 부모 창 핸들
-                NULL,                           // 메뉴 없음
-                hInst,                          // 인스턴스 핸들
-                drowWnd.get()                   // DrowWindow 객체 전달
-            );
-
-            if (WndFunc::drowWnd == nullptr) {
-                MessageBox(NULL, L"창 생성 실패", L"에러", MB_OK);
-            }
-            
-           
-
-            // 기존 버튼 숨김
-            ShowWindow(DrowBT, SW_HIDE);
-            ShowWindow(LoadBT, SW_HIDE);
-            ShowWindow(CreditBT, SW_HIDE);
 
             // 새 창 표시
             ShowWindow(WndFunc::drowWnd, SW_SHOW);
+            ShowWindow(WndFunc::nameWnd, SW_SHOW);
+            ShowWindow(WndFunc::toolWnd, SW_SHOW);
+            ShowWindow(WndFunc::canvasWnd, SW_SHOW);
+            ShowWindow(WndFunc::sideWnd, SW_SHOW);
+            ShowWindow(WndFunc::visitListWnd, SW_SHOW);
 
+            // 기존 버튼 숨김
+            ShowWindow(WndFunc::DrowBT, SW_HIDE);
+            ShowWindow(WndFunc::LoadBT, SW_HIDE);
+            ShowWindow(WndFunc::CreditBT, SW_HIDE);
             break;
         }
-
         case DEF_LOAD_BT:   // 불러오기
         {
-            /*
-            WndFunc::drowWnd = CreateWindow(
-                DROW_CLASS,                     // 클래스 이름
-                DROW_NAME,                     // 창 제목
-                WS_OVERLAPPEDWINDOW,            // 자식 창 스타일
-                0, 0, 2000, 100,                 // 위치와 크기 (X, Y, Width, Height)
-                hWnd,                             // 부모 창 핸들
-                NULL,                             // 메뉴 없음
-                hInst,                            // 인스턴스 핸들
-                NULL                              // 추가 데이터 없음
-            );
-
-            drowWnd = std::make_unique<DrowWindow>(2,hInst);
-            */
-            ShowWindow(DrowBT, SW_HIDE);
-            ShowWindow(LoadBT, SW_HIDE);
-            ShowWindow(CreditBT, SW_HIDE);
+         
+            /// 현재 버튼을 숨김
+            WndFunc::buttonOn = false;
 
             ShowWindow(WndFunc::drowWnd, SW_SHOW);
+            ShowWindow(WndFunc::nameWnd, SW_SHOW);
+            ShowWindow(WndFunc::toolWnd, SW_SHOW);
+            ShowWindow(WndFunc::canvasWnd, SW_SHOW);
+            ShowWindow(WndFunc::sideWnd, SW_SHOW);
+            ShowWindow(WndFunc::visitListWnd, SW_SHOW);
+
+            ShowWindow(WndFunc::DrowBT, SW_HIDE);
+            ShowWindow(WndFunc::LoadBT, SW_HIDE);
+            ShowWindow(WndFunc::CreditBT, SW_HIDE);
             break;
         }
         case DEF_CREDIT_BT: // CREDIT
         {
+
+            WndFunc::creditOn = true;
+
+            ShowWindow(WndFunc::drowWnd, SW_SHOW);
+            ShowWindow(WndFunc::nameWnd, SW_SHOW);
+
+            ShowWindow(WndFunc::fileNameW, SW_HIDE);
+            ShowWindow(WndFunc::DrowBT, SW_HIDE);
+            ShowWindow(WndFunc::LoadBT, SW_HIDE);
+            ShowWindow(WndFunc::CreditBT, SW_HIDE);
 
             break;
         }
@@ -246,22 +280,156 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     }
+    case WM_SIZE:
+    {
+        /// 창 사이즈 조절시 현재 창 크기를 받아옴
+        GetClientRect(hWnd, &WndFunc::wndSize);
 
+        /// 하위 윈도우들 크기 및 위치 조정
+        MoveWindow(WndFunc::drowWnd, 0, 0, WndFunc::wndSize.right, WndFunc::wndSize.bottom, true);
+        MoveWindow(WndFunc::nameWnd, 0, 0, WndFunc::wndSize.right, 57, true);
+        MoveWindow(WndFunc::toolWnd, -1, 57, WndFunc::wndSize.right, 51, true);
+        MoveWindow(WndFunc::canvasWnd, (WndFunc::wndSize.right - 1300) / 2,(WndFunc::wndSize.bottom - 600) / 2, 1300, 700, true);
+        MoveWindow(WndFunc::visitListWnd, 0, WndFunc::wndSize.bottom - 30, WndFunc::wndSize.right, WndFunc::wndSize.bottom, true);
+
+        MoveWindow(WndFunc::DrowBT, (WndFunc::wndSize.right / 2) - 450, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, true);
+        MoveWindow(WndFunc::LoadBT, (WndFunc::wndSize.right / 2) - 120, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, true);
+        MoveWindow(WndFunc::CreditBT, (WndFunc::wndSize.right / 2) + 210, (WndFunc::wndSize.bottom / 2) - 50 + 100, 250, 250, true);
+        break;
+    }
+    case WM_GETMINMAXINFO:
+    {
+        /// 최소 창 크기 지정
+        MINMAXINFO* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
+
+        mmi->ptMinTrackSize.x = 1350;  // 최소 너비 1350px
+        mmi->ptMinTrackSize.y = 900;  // 최소 높이 900px
+
+        break;
+    }
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
-        HBRUSH hbr = (HBRUSH)SelectObject(hdc, CreateSolidBrush(RGB(249, 249, 249)));
-        // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-        GetClientRect(hWnd, &WndFunc::wndSize);
+
+        // "GUEST BOOK" 텍스트를 화면에 그리기
+        const wchar_t* title = L"GUEST BOOK";
+        HFONT hFont = CreateFont(
+            175,                  // 글꼴 크기
+            0, 0, 0,             // 너비와 각도 (0은 자동 설정)
+            FW_BOLD,             // 굵게 설정
+            FALSE, FALSE, FALSE, // 기울임, 밑줄, 취소선 여부
+            DEFAULT_CHARSET,     // 문자 집합
+            OUT_DEFAULT_PRECIS,
+            CLIP_DEFAULT_PRECIS,
+            DEFAULT_QUALITY,
+            DEFAULT_PITCH | FF_SWISS,
+            L"Arial");           // 글꼴 이름
+
+        HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
+        SetBkMode(hdc, TRANSPARENT); // 배경을 투명하게 설정
+        SetTextColor(hdc, RGB(0, 0, 0)); // 검은색 텍스트
+
+        // 화면 중앙 상단에 텍스트를 출력
+        int x = (WndFunc::wndSize.right - 1000) / 2;  // 텍스트의 가로 위치 조정
+        int y = 50;  // 텍스트의 세로 위치 조정
+        TextOut(hdc, x, y, title, wcslen(title));
+
+        // 이전 글꼴과 자원 해제
+        SelectObject(hdc, hOldFont);
+        DeleteObject(hFont);
+
+        // "Ver.2024" 작은 글씨 추가
+        const wchar_t* versionText = L"Ver.2024";
+        HFONT hFontVersion = CreateFont(
+            20,                   // 작은 글씨 크기
+            0, 0, 0,             // 너비와 각도 (0은 자동 설정)
+            FW_LIGHT,            // 얇게 설정
+            FALSE, FALSE, FALSE, // 기울임, 밑줄, 취소선 여부
+            DEFAULT_CHARSET,     // 문자 집합
+            OUT_DEFAULT_PRECIS,
+            CLIP_DEFAULT_PRECIS,
+            DEFAULT_QUALITY,
+            DEFAULT_PITCH | FF_SWISS,
+            L"Arial");           // 글꼴 이름
+
+        hOldFont = (HFONT)SelectObject(hdc, hFontVersion);
+
+        // "GUEST BOOK" 아래에 "Ver.2024" 텍스트 출력
+        int versionX = x + 970;  // 큰 글씨 오른쪽 하단에 배치
+        int versionY = y + 150;  // 큰 글씨 아래 위치
+        TextOut(hdc, versionX, versionY, versionText, wcslen(versionText));
+
+        // 작은 글씨 자원 해제
+        SelectObject(hdc, hOldFont);
+        DeleteObject(hFontVersion);
+
+        // 기존 펜을 백업하기 위해 선언
+        HPEN oldPen;
+        // 굵기 3의 펜 생성
+        HPEN thickPen = CreatePen(PS_SOLID, 3, RGB(0, 0, 0));
+
+        // HDC에 굵기 3 펜을 선택
+        oldPen = (HPEN)SelectObject(hdc, thickPen);
 
 
-        DeleteObject(hbr);
+        HFONT hFontText = CreateFont(
+            40,                 // "서명하기" 텍스트의 크기
+            0, 0, 0,           // 너비와 각도 (0은 자동 설정)
+            FW_BOLD,           // 굵게 설정
+            FALSE, FALSE, FALSE, // 기울임, 밑줄, 취소선 여부
+            DEFAULT_CHARSET,   // 문자 집합
+            OUT_DEFAULT_PRECIS,
+            CLIP_DEFAULT_PRECIS,
+            DEFAULT_QUALITY,
+            DEFAULT_PITCH | FF_SWISS,
+            L"Malgun Gothic");         // 글꼴 이름
+        HFONT hOldFontText = (HFONT)SelectObject(hdc, hFontText);
+
+
+        // 첫 번째 직사각형 그리기
+        Rectangle(hdc, (WndFunc::wndSize.right / 2) - 480, (WndFunc::wndSize.bottom / 2) + 20 , (WndFunc::wndSize.right / 2) - 170, (WndFunc::wndSize.bottom / 2) + 330);
+
+
+        // "서명하기" 텍스트를 큰 글씨로 출력
+        LPCWSTR text = L"서명하기";
+        TextOut(hdc, (WndFunc::wndSize.right / 2) - 380, (WndFunc::wndSize.bottom / 2) - 40, text, wcslen(text));
+
+
+        // 두 번째 직사각형 그리기
+        Rectangle(hdc, (WndFunc::wndSize.right / 2) - 145, (WndFunc::wndSize.bottom / 2) + 20, (WndFunc::wndSize.right / 2) + 160, (WndFunc::wndSize.bottom / 2) + 330);
+
+        // "서명하기" 텍스트를 큰 글씨로 출력
+        text = L"불러오기";
+        TextOut(hdc, (WndFunc::wndSize.right / 2) - 50, (WndFunc::wndSize.bottom / 2) - 40, text, wcslen(text));
+
+
+
+        // 세 번째 직사각형 그리기
+        Rectangle(hdc, (WndFunc::wndSize.right / 2) + 180, (WndFunc::wndSize.bottom / 2) + 20, (WndFunc::wndSize.right / 2) + 490, (WndFunc::wndSize.bottom / 2) + 330);
+
+        // "서명하기" 텍스트를 큰 글씨로 출력
+        text = L"CREDIT";
+        TextOut(hdc, (WndFunc::wndSize.right / 2) + 285, (WndFunc::wndSize.bottom / 2) - 40, text, wcslen(text));
+
+
+        // 원래 펜으로 되돌림
+        SelectObject(hdc, oldPen);
+
+        // "서명하기" 텍스트의 글꼴 자원 해제
+        SelectObject(hdc, hOldFontText);
+        DeleteObject(hFontText);
+
+        // 사용한 펜 삭제
+        DeleteObject(thickPen);
         EndPaint(hWnd, &ps);
+        break;
     }
-    break;
+
+
+    
     case WM_DESTROY:
-        
+        SendMessage(WndFunc::canvasWnd, WM_COMMAND, TL_RESET_BT, 0);
         PostQuitMessage(0);
         /// function->GDIPlusEnd();
         break;

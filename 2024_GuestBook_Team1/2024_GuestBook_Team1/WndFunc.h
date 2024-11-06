@@ -12,15 +12,25 @@ public:
     static HWND canvasWnd;
     static HWND menuWnd;
     static HWND sideWnd;
+    static HWND visitListWnd;
     static HWND colorWnd;
+
+    static HWND DrowBT;
+    static HWND LoadBT;
+    static HWND CreditBT;
+    static HWND fileNameW;
+    static HWND fileManager;
+
+    static bool buttonOn;
+    static bool creditOn;
 
     static HINSTANCE hInst;
 
     static RECT wndSize;
 
     RECT GetRT(HWND);
-    void RegisterNewClass(HINSTANCE,LPCWSTR);
-    
+    void RegisterNewClass(HINSTANCE, LPCWSTR);
+
 
 
 private:
